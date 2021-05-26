@@ -74,17 +74,17 @@ const repaginate = (arr, pageNumber, pageSize) => {
         dataSource: arr,
         pageSize,
         pageNumber,
-        callback: (_, pagination) => {
+        callback: (data, pagination) => {
             console.log(pagination);
         },
     });
-    $('#pagination').addHook('afterPageOnClick', (_, pageNumber) => {
+    $('#pagination').addHook('afterPageOnClick', (data, pageNumber) => {
         getCandidates(pageNumber - 1, pageSize);
     });
-    $('#pagination').addHook('afterNextOnClick', (_, pageNumber) => {
+    $('#pagination').addHook('afterNextOnClick', (data, pageNumber) => {
         getCandidates(pageNumber - 1, pageSize);
     });
-    $('#pagination').addHook('afterPreviousOnClick', (_, pageNumber) => {
+    $('#pagination').addHook('afterPreviousOnClick', (data, pageNumber) => {
         getCandidates(pageNumber - 1, pageSize);
     });
 };
