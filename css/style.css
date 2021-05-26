@@ -1,0 +1,44 @@
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+ul {
+    display: flex !important;
+}
+
+ul > li {
+    margin: 3px;
+    padding: 10px;
+    border: 2px solid rgb(62, 162, 192);
+    list-style: none;
+    border-radius: 5px;
+}
+
+html{
+    background-color: #f6f5f5;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    text-align: center;
+}
+
+#b1{
+    background-color: #f6f5f5;
+    padding: 3%;
+    height: 100vh;
+}
+
+.f2{
+    width: 70%;
+    margin: auto;
+    padding: 3%;
+    border: none;
+    border-radius: 2%;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+
