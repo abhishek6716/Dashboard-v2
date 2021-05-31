@@ -24,7 +24,7 @@ const getLoginDetails = async (keyString) => {
             const datum = await response.json()
             localStorage.setItem('token', datum.data.accessToken)
             console.log(window.location)
-            window.location = window.location.href.split('/index.html')[0] + '/templates/views/table.html'
+            window.location = window.location.href.split('/index.html')[0] + '/templates/table.html'
             console.log(window.location)
         } else {
             throw new Error('Unable to get experience')
