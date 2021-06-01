@@ -437,6 +437,18 @@ document.getElementById('button').addEventListener('click', (e) => {
     getCandidates(0, pageSize);
 })
 
+const getString = (e) => {
+    queryValue = '';
+    let inputStr = e.target.value;
+    if(inputStr === ' '){
+        alert('Enter valid string!');
+    } else{
+        queryValue = inputStr;
+        const pageSize = $('#pageSize').val();
+        getCandidates(0, pageSize);
+    }
+}
+
 
 
 
