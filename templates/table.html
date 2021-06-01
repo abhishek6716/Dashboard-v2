@@ -32,143 +32,153 @@
 <body>
     <div style="display: flex; justify-content: space-evenly; margin-top: 25px; margin-bottom: 25px;">
         <div style="display: inline;">
-            <button id="showFilterBtn" class="btn btn-primary">Show Filters</button>
-            <button id="resetFilterBtn" class="btn btn-danger">Reset Filters</button>
+            <button id="showFilterBtn" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Show Filters</button>
+            <button id="resetFilterBtn" class="btn btn-danger" onclick="resetFilters()">Reset Filters</button>
         </div>
         <div style="display: inline;">
             <input id="search" type="text" placeholder="Type Here" oninput="getString(event)">
         </div>
     </div>
-    <div class="container-fluid" style="margin-bottom: 50px;">
-        <div class="f2" style="padding-bottom: 50px;">
-            <div style="-webkit-text-stroke-width: thick; display:inline; float: left;">Filters</div>
-            <div style="display: inline; float: right;">X</div>
-            <hr style="margin-top: 30px;">
-            <div class="form-row">
-                <div class="col">
-                    <label for="sortBy">Sort By:</label>
-                    <select id="sortBy" class="form-control">
-                        <option value="0">Select Type</option>
-                        <option value="1">Created Date</option>
-                        <option value="2">Updated date</option>
-                        <option value="3">Amount</option>
-                        <option value="4">Payment Date</option>
-                    </select>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Filters</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="col">
-                    <label for="ascending">Ascending:</label>
-                    <select id="ascending" class="form-control" onchange="getOrder(event)">
-                        <option value="0">Select Type</option>
-                        <option value="1">Ascending</option>
-                        <option value="2">Desending</option>
-                    </select>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                            <div class="f2">
+                                <div class="form-row">
+                                    <div class="col">
+                                        <label for="sortBy">Sort By:</label>
+                                        <select id="sortBy" class="form-control">
+                                            <option value="0">Select Type</option>
+                                            <option value="1">Created Date</option>
+                                            <option value="2">Updated date</option>
+                                            <option value="3">Amount</option>
+                                            <option value="4">Payment Date</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <label for="ascending">Ascending:</label>
+                                        <select id="ascending" class="form-control" onchange="getOrder(event)">
+                                            <option value="0">Select Type</option>
+                                            <option value="1">Ascending</option>
+                                            <option value="2">Desending</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col">
+                                        <label for="startDate">Start Date:</label>
+                                        <input type="text" id="startDate" class="form-control datepicker" placeholder="DD-MM-YYYY" maxlength="10" onchange="getStartDate(event)">
+                                    </div>
+                                    <div class="col">
+                                        <label for="endDate">End Date:</label>
+                                        <input type="text" id="endDate" class="form-control" placeholder="DD-MM-YYYY" maxlength="10" onchange="getEndDate(event)">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col">
+                                        <label for="dateType">Date Type:</label>
+                                        <select id="dateType" class="form-control" onchange="getDateType(event)">
+                                            <option value="0">Select Type</option>
+                                            <option value="1">CREATED DATE</option>
+                                            <option value="2">LAST STATUS CHANGE DATE</option>
+                                            <option value="3">LAST UPDATED DATE</option>
+                                            <option value="4">LAST UPLOAD DATE</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <label for="candidateType">Candidate Type:</label>
+                                        <select id="candidateType" class="form-control" onchange="getCandidateType(event)">
+                                            <option value="0">Select Type</option>
+                                            <option value="1">SELF</option>
+                                            <option value="2">EMPLOYEE</option>
+                                            <option value="3">HR</option>
+                                            <option value="4">RECRUITMENT AGENCY</option>
+                                            <option value="5">ALL</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col form-group">
+                                        <label for="candidateStatus">Candidate Status:</label>
+                                        <select id="candidateStatus" class="form-control" onchange="getCandidateStatus(event)">
+                                            <option value="0">Select Type</option>
+                                            <option value="1">CREATED</option>
+                                            <option value="2">SHORT LISTED</option>
+                                            <option value="3">HOLD</option>
+                                            <option value="4">REJECTED</option>
+                                            <option value="5">ALL</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label for="overallExperience">Overall Experience:</label>
+                                            <select class="form-control" id="overallExperience">
+                                                <option value="0">Select</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label for="relaventExperience">Relavent Experience:</label>
+                                            <select class="form-control" id="relaventExperience">
+                                                <option value="0">Select</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label for="department">Department:</label>
+                                            <select class="form-control" id="department">
+                                                <option value="0">Select</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                        
+                                </div>
+                                <div class="form-row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label for="role">Role:</label>
+                                            <select class="form-control" id="role" disabled>
+                                                <option value="0">Select</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label for="zone">Zone:</label>
+                                            <select class="form-control" id="zone">
+                                                <option value="0">Select</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col">
+                                        <div class="form-group">
+                                            <label for="branch">Branch:</label>
+                                            <select class="form-control" id="branch" disabled>
+                                                <option value="0">Select</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col"></div>
+                                </div>
+                            </div>
+                        </div>
                 </div>
-            </div>
-            <div class="form-row">
-                <div class="col">
-                    <label for="startDate">Start Date:</label>
-                    <input type="text" id="startDate" class="form-control" placeholder="DD-MM-YYYY" maxlength="10" onchange="getStartDate(event)">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="button">Filter Data</button>
                 </div>
-                <div class="col">
-                    <label for="endDate">End Date:</label>
-                    <input type="text" id="endDate" class="form-control" placeholder="DD-MM-YYYY" maxlength="10" onchange="getEndDate(event)">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="col">
-                    <label for="dateType">Date Type:</label>
-                    <select id="dateType" class="form-control" onchange="getDateType(event)">
-                        <option value="0">Select Type</option>
-                        <option value="1">CREATED DATE</option>
-                        <option value="2">LAST STATUS CHANGE DATE</option>
-                        <option value="3">LAST UPDATED DATE</option>
-                        <option value="4">LAST UPLOAD DATE</option>
-                    </select>
-                </div>
-                <div class="col">
-                    <label for="candidateType">Candidate Type:</label>
-                    <select id="candidateType" class="form-control" onchange="getCandidateType(event)">
-                        <option value="0">Select Type</option>
-                        <option value="1">SELF</option>
-                        <option value="2">EMPLOYEE</option>
-                        <option value="3">HR</option>
-                        <option value="4">RECRUITMENT AGENCY</option>
-                        <option value="5">ALL</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="col form-group">
-                    <label for="candidateStatus">Candidate Status:</label>
-                    <select id="candidateStatus" class="form-control" onchange="getCandidateStatus(event)">
-                        <option value="0">Select Type</option>
-                        <option value="1">CREATED</option>
-                        <option value="2">SHORT LISTED</option>
-                        <option value="3">HOLD</option>
-                        <option value="4">REJECTED</option>
-                        <option value="5">ALL</option>
-                    </select>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label for="overallExperience">Overall Experience:</label>
-                        <select class="form-control" id="overallExperience">
-                            <option value="0">Select</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="col">
-                    <div class="form-group">
-                        <label for="relaventExperience">Relavent Experience:</label>
-                        <select class="form-control" id="relaventExperience">
-                            <option value="0">Select</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label for="department">Department:</label>
-                        <select class="form-control" id="department">
-                            <option value="0">Select</option>
-                        </select>
-                    </div>
-                </div>
-    
-            </div>
-            <div class="form-row">
-                <div class="col">
-                    <div class="form-group">
-                        <label for="role">Role:</label>
-                        <select class="form-control" id="role" disabled>
-                            <option value="0">Select</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label for="zone">Zone:</label>
-                        <select class="form-control" id="zone">
-                            <option value="0">Select</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="col">
-                    <div class="form-group">
-                        <label for="branch">Branch:</label>
-                        <select class="form-control" id="branch" disabled>
-                            <option value="0">Select</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col"></div>
-            </div>
-            <hr>
-            <div class="form-group">
-                <button type="button" class="btn btn-success" id="button" style="float: right;">Filter Data</button>
             </div>
         </div>
     </div>

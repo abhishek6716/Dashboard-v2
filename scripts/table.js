@@ -372,7 +372,8 @@ const getOrder = (e) => {
     }
 }
 
-
+let isStartDateSelected = false;
+let isEndDateSelected = false;
 const getStartDate = (e) => {
     let inputValue = e.target.value;
     startDateValue = inputValue; 
@@ -448,6 +449,12 @@ const getString = (e) => {
         getCandidates(0, pageSize);
     }
 }
+
+
+const resetFilters = () => {
+    
+}
+
 
 
 
