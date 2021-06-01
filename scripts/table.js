@@ -433,7 +433,8 @@ const getCandidateStatus = (e) => {
 }
 
 document.getElementById('button').addEventListener('click', (e) => {
-    getCandidates(0, 10);
+    const pageSize = $('#pageSize').val();
+    getCandidates(0, pageSize);
 })
 
 
