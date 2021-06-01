@@ -43,6 +43,19 @@ body {
 
 
 
+.box-00{
+    position: relative;
+}
 
+.box-1{
+    position: absolute;
+    z-index: 9;
+    background-color: white;
+}
+
+.box-2{
+    position: absolute;
+    opacity: 0.8;
+}
 
 

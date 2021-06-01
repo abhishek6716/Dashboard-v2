@@ -30,8 +30,17 @@
 </head>
 
 <body>
+    <div style="display: flex; justify-content: space-evenly; margin-top: 25px; margin-bottom: 25px;">
+        <div style="display: inline;">
+            <button id="showFilterBtn" class="btn btn-primary">Show Filters</button>
+            <button id="resetFilterBtn" class="btn btn-danger">Reset Filters</button>
+        </div>
+        <div style="display: inline;">
+            <input id="search" type="text" placeholder="Type Here">
+        </div>
+    </div>
     <div class="container-fluid" style="margin-bottom: 50px;">
-        <div class="f2">
+        <div class="f2" style="padding-bottom: 50px;">
             <div style="-webkit-text-stroke-width: thick; display:inline; float: left;">Filters</div>
             <div style="display: inline; float: right;">X</div>
             <hr style="margin-top: 30px;">
@@ -39,71 +48,72 @@
                 <div class="col">
                     <label for="sortBy">Sort By:</label>
                     <select id="sortBy" class="form-control">
-                        <option>Select Type</option>
-                        <option>Created Date</option>
-                        <option>Updated date</option>
-                        <option>Amount</option>
-                        <option>Payment Date</option>
+                        <option value="0">Select Type</option>
+                        <option value="1">Created Date</option>
+                        <option value="2">Updated date</option>
+                        <option value="3">Amount</option>
+                        <option value="4">Payment Date</option>
                     </select>
                 </div>
                 <div class="col">
                     <label for="ascending">Ascending:</label>
-                    <select id="ascending" class="form-control">
-                        <option>Select Type</option>
-                        <option>Ascending</option>
-                        <option>Desending</option>
+                    <select id="ascending" class="form-control" onchange="getOrder(event)">
+                        <option value="0">Select Type</option>
+                        <option value="1">Ascending</option>
+                        <option value="2">Desending</option>
                     </select>
                 </div>
             </div>
             <div class="form-row">
                 <div class="col">
                     <label for="startDate">Start Date:</label>
-                    <input type="date" id="startDate" class="form-control">
+                    <input type="text" id="startDate" class="form-control" placeholder="DD-MM-YYYY" maxlength="10" onchange="getStartDate(event)">
                 </div>
                 <div class="col">
                     <label for="endDate">End Date:</label>
-                    <input type="date" id="endDate" class="form-control">
+                    <input type="text" id="endDate" class="form-control" placeholder="DD-MM-YYYY" maxlength="10" onchange="getEndDate(event)">
                 </div>
             </div>
             <div class="form-row">
                 <div class="col">
                     <label for="dateType">Date Type:</label>
-                    <select id="dateType" class="form-control">
-                        <option>Select Type</option>
-                        <option>CREATED DATE</option>
-                        <option>LAST STATUS CHANGE DATE</option>
-                        <option>LAST UPDATED DATE</option>
-                        <option>LAST UPLOAD DATE</option>
+                    <select id="dateType" class="form-control" onchange="getDateType(event)">
+                        <option value="0">Select Type</option>
+                        <option value="1">CREATED DATE</option>
+                        <option value="2">LAST STATUS CHANGE DATE</option>
+                        <option value="3">LAST UPDATED DATE</option>
+                        <option value="4">LAST UPLOAD DATE</option>
                     </select>
                 </div>
                 <div class="col">
                     <label for="candidateType">Candidate Type:</label>
-                    <select id="candidateType" class="form-control">
-                        <option>Select Type</option>
-                        <option>SELF</option>
-                        <option>EMPLOYEE</option>
-                        <option>HR</option>
-                        <option>RECRUITMENT AGENCY</option>
-                        <option>ALL</option>
+                    <select id="candidateType" class="form-control" onchange="getCandidateType(event)">
+                        <option value="0">Select Type</option>
+                        <option value="1">SELF</option>
+                        <option value="2">EMPLOYEE</option>
+                        <option value="3">HR</option>
+                        <option value="4">RECRUITMENT AGENCY</option>
+                        <option value="5">ALL</option>
                     </select>
                 </div>
             </div>
             <div class="form-row">
                 <div class="col form-group">
                     <label for="candidateStatus">Candidate Status:</label>
-                    <select id="candidateStatus" class="form-control">
-                        <option>CREATED</option>
-                        <option>SHORT LISTED</option>
-                        <option>HOLD</option>
-                        <option>REJECTED</option>
-                        <option>ALL</option>
+                    <select id="candidateStatus" class="form-control" onchange="getCandidateStatus(event)">
+                        <option value="0">Select Type</option>
+                        <option value="1">CREATED</option>
+                        <option value="2">SHORT LISTED</option>
+                        <option value="3">HOLD</option>
+                        <option value="4">REJECTED</option>
+                        <option value="5">ALL</option>
                     </select>
                 </div>
                 <div class="col">
                     <div class="form-group">
                         <label for="overallExperience">Overall Experience:</label>
                         <select class="form-control" id="overallExperience">
-                            <option value="selectExpOveID">Select</option>
+                            <option value="0">Select</option>
                         </select>
                     </div>
                 </div>
@@ -113,7 +123,7 @@
                     <div class="form-group">
                         <label for="relaventExperience">Relavent Experience:</label>
                         <select class="form-control" id="relaventExperience">
-                            <option value="selectExpRelID">Select</option>
+                            <option value="0">Select</option>
                         </select>
                     </div>
                 </div>
@@ -121,18 +131,18 @@
                     <div class="form-group">
                         <label for="department">Department:</label>
                         <select class="form-control" id="department">
-                            <option value="selectDep">Select</option>
+                            <option value="0">Select</option>
                         </select>
                     </div>
                 </div>
-            
+    
             </div>
             <div class="form-row">
                 <div class="col">
                     <div class="form-group">
                         <label for="role">Role:</label>
                         <select class="form-control" id="role" disabled>
-                            <option value="selectRole">Select</option>
+                            <option value="0">Select</option>
                         </select>
                     </div>
                 </div>
@@ -140,7 +150,7 @@
                     <div class="form-group">
                         <label for="zone">Zone:</label>
                         <select class="form-control" id="zone">
-                            <option value="selectZone">Select</option>
+                            <option value="0">Select</option>
                         </select>
                     </div>
                 </div>
@@ -150,12 +160,13 @@
                     <div class="form-group">
                         <label for="branch">Branch:</label>
                         <select class="form-control" id="branch" disabled>
-                            <option value="selectBranch">Select</option>
+                            <option value="0">Select</option>
                         </select>
                     </div>
                 </div>
                 <div class="col"></div>
             </div>
+            <hr>
             <div class="form-group">
                 <button type="button" class="btn btn-success" id="button" style="float: right;">Filter Data</button>
             </div>
@@ -173,7 +184,7 @@
                     <th scope="col">Date of application received</th>
                     <th scope="col">Latest Actioned Date</th>
                     <th scope="col">Last Action Date</th>
-                    <th scope="col">Status</th>
+                    <th scope="col">Candidate Status</th>
                     <th scope="col">Candidate ID</th>
                     <th scope="col">Remarks</th>
                     <th scope="col">Download Update</th>
@@ -196,7 +207,7 @@
             <div id="pagination" class="paginationjs-theme-blue"></div>
         </div>
     </div>
-
+    
     <script src="../scripts/pagination.min.js"></script>
     <script src="../scripts/table.js"></script>
 

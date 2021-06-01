@@ -63,12 +63,12 @@ const button = document.getElementById('button');                               
 
 
 
-let experienceOverallID = 'selectExpOveID',
-    experienceRelavantID = 'selectExpRelID',
-    departmentID = 'selectDep',
-    roleID = 'selectRole',
-    zoneID = 'selectZone',
-    jobLocationID = 'selectBranch';
+let experienceOverallID = '',
+    experienceRelavantID = '',
+    departmentID = '',
+    roleID = '',
+    zoneID = '',
+    jobLocationID = '';
 
 
 ////////////////////////////// OVERALL AND RELAVENT EXPERIENCE SETUP //////////////////////////
@@ -108,18 +108,28 @@ function setReleventEl() {
 }
 
 overallExperience.addEventListener('change', (e) => {
-    experienceOverallID = e.target.value;
+    let selectedValue = e.target.value;
+    if(selectedValue === '0'){
+        experienceOverallID = '';
+    } else{
+        experienceOverallID = selectedValue;
+    }
 });
 
 relaventExperience.addEventListener('change', (e) => {
-    experienceRelavantID = e.target.value;
+    let selectedValue = e.target.value;
+    if (selectedValue === '0') {
+        experienceRelavantID = '';
+    } else {
+        experienceRelavantID = selectedValue;
+    }
 });
 
 /////////////////////////////////// DEPARTMENT AND ROLE SETUP /////////////////////////////////////
 
 const clearRoles = () => {
-    role.innerHTML = '<option value="selectRole">Select</option>';
-    roleID = 'selectRole'
+    role.innerHTML = '<option value="0">Select</option>';
+    roleID = ''
 };
 
 
@@ -146,9 +156,10 @@ department.addEventListener('change', (e) => {
     clearRoles();
     const id = e.target.value;
     departmentID = id;
-    if (departmentID != 'selectDep') {
+    if (departmentID != '0') {
         setRoleEl(id);
     } else {
+        departmentID = '';
         role.disabled = true;
     }
 });
@@ -168,15 +179,20 @@ function setRoleEl(selectedDep) {
     }
     role.disabled = false;
     role.addEventListener('change', (e) => {
-        roleID = e.target.value;
+        let selectedValue = e.target.value;
+        if(selectedValue === '0'){
+            roleID = '';
+        } else{
+            roleID = selectedValue;
+        }
     });
 }
 
 ///////////////////////////// ZONES AND BRANCHES SETUP /////////////////////////////////
 
 const clearBranches = () => {
-    branch.innerHTML = '<option value="selectBranch">Select</option>';
-    jobLocationID = 'selectBranch'
+    branch.innerHTML = '<option value="0">Select</option>';
+    jobLocationID = ''
 };
 
 let zoneData;
@@ -213,7 +229,12 @@ function setBranchesEl() {
     }
     branch.disabled = false;
     branch.addEventListener('change', (e) => {
-        jobLocationID = e.target.value;
+        let selectedValue = e.target.value;
+        if(selectedValue === '0'){
+            jobLocationID = '';
+        } else{
+            jobLocationID = selectedValue
+        }
     });
 }
 
@@ -221,9 +242,10 @@ zone.addEventListener('change', (e) => {
     clearBranches();
     let selectedZone = e.target.value;
     zoneID = selectedZone;
-    if (zoneID != 'selectZone') {
+    if (zoneID != '0') {
         loadBranchesData(selectedZone);
     } else {
+        zoneID = ''
         branch.disabled = true;
     }
 });
@@ -231,10 +253,22 @@ zone.addEventListener('change', (e) => {
 
 
 ////////////////////////  table and pagination section  ///////////////////////////
+const sortBy = document.getElementById('sortBy')
+
+
 
 $(document).ready(function () {
     getCandidates(0, 10);
 });
+
+let sortByValue = '',
+    isAscending = false,
+    startDateValue = '',
+    endDateValue = '',
+    dateTypeValue = '',
+    candidateTypeValue = '',
+    candidateStatusValue = '',
+    queryValue = '';
 
 const getCandidates = async (pageNo, pageSize) => {
     var myHeaders = new Headers();
@@ -248,7 +282,7 @@ const getCandidates = async (pageNo, pageSize) => {
 
     try {
         const response = await fetch(
-            `https://api-hfc.techchefz.com/icicihfc-micro-service/rms/dashboard/get/all/candidates/?pageNo=${pageNo}&pageSize=${pageSize}`,
+            `https://api-hfc.techchefz.com/icicihfc-micro-service/rms/dashboard/get/all/candidates/?pageNo=${pageNo}&pageSize=${pageSize}&sortBy=${sortByValue}&ascending=${isAscending}&startDate=${startDateValue}&endDate=${endDateValue}&dateFilterType=${dateTypeValue}&candidateType=${candidateTypeValue}&query=${queryValue}&experienceOverallId=${experienceOverallID}&zoneName=${zoneID}&experienceRelevantId=${experienceRelavantID}&roleId=${roleID}&jobLocationId=${jobLocationID}&candidateStatus=${candidateStatusValue}`,
             requestOptions
         );
 
@@ -315,6 +349,93 @@ const repaginate = (arr, pageNumber, pageSize) => {
     });
 };
 
+
+// const getSortByValue = (e) => {
+//     let selectedValue = e.target.value
+//     if(selectedValue == '0'){
+//         sortByValue = '';
+//     } else if(selectedValue =='1'){
+//         sortByValue = 'CREATED';
+//     } else if(selectedValue == '2'){
+//         sortByValue = ''
+//     }
+// }
+
+
+const getOrder = (e) => {
+    let selectedValue = e.target.value;
+    if(selectedValue === '0'){
+        isAscending = false;
+    } else if(selectedValue === '1'){
+        isAscending = true;
+    } else{
+        isAscending = false;
+    }
+}
+
+
+const getStartDate = (e) => {
+    let inputValue = e.target.value;
+    startDateValue = inputValue; 
+}
+
+const getEndDate = (e) => {
+    let inputValue = e.target.value;
+    endDateValue = inputValue;
+}
+
+const getDateType = (e) => {
+    let selectedValue = e.target.value;
+    if (selectedValue === '0') {
+        dateTypeValue = '';
+    } else if (selectedValue === '1') {
+        dateTypeValue = 'CREATED_DATE'
+    } else if (selectedValue === '2'){
+        dateTypeValue = 'LAST_STATUS_CHANGE_DATE'
+    } else if (selectedValue === '3'){
+        dateTypeValue = 'LAST_UPDATED_DATE'
+    } else{
+        dateTypeValue = 'LAST_UPLOAD_DATE'
+    }
+}
+
+const getCandidateType = (e) => {
+    let selectedValue = e.target.value;
+    if (selectedValue === '0') {
+        candidateTypeValue = '';
+    } else if (selectedValue === '1') {
+        candidateTypeValue = 'SELF'
+    } else if (selectedValue === '2') {
+        candidateTypeValue = 'EMPLOYEE'
+    } else if (selectedValue === '3') {
+        candidateTypeValue = 'HR'
+    } else if(selectedValue === '4'){
+        candidateTypeValue = 'RECRUITMENT_AGENCY'
+    } else {
+        candidateTypeValue = 'ALL'
+    }
+}
+
+const getCandidateStatus = (e) => {
+    let selectedValue = e.target.value;
+    if (selectedValue === '0') {
+        candidateStatusValue = '';
+    } else if (selectedValue === '1') {
+        candidateStatusValue = 'CREATED'
+    } else if (selectedValue === '2') {
+        candidateStatusValue = 'SHORT_LISTED'
+    } else if (selectedValue === '3') {
+        candidateStatusValue = 'HOLD'
+    } else if (selectedValue === '4'){
+        candidateStatusValue = 'REJECTED'
+    } else {
+        candidateStatusValue = 'ALL'
+    }
+}
+
+document.getElementById('button').addEventListener('click', (e) => {
+    
+})
 
 
 
