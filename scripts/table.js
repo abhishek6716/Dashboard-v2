@@ -256,7 +256,6 @@ zone.addEventListener('change', (e) => {
 const sortBy = document.getElementById('sortBy')
 
 
-
 $(document).ready(function () {
     getCandidates(0, 10);
 });
@@ -434,7 +433,7 @@ const getCandidateStatus = (e) => {
 }
 
 document.getElementById('button').addEventListener('click', (e) => {
-    
+    getCandidates(0, 10);
 })
 
 
