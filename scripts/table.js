@@ -1,10 +1,27 @@
 const accessToken = localStorage.getItem('token');
 
 if (!accessToken) {
-    window.location =
-        window.location.href.split('/templates/table.html')[0] + '/index.html';
+    window.location = window.location.href.split('/templates/table.html')[0] + '/index.html';
 }
 
+const redirectPage = () => {
+    window.location = window.location.href.split('/templates/table.html')[0] + '/index.html';
+}
+
+const userName = localStorage.getItem('loginUserName');
+if(!userName){
+    userName = 'user name not fetched';
+}
+const lastLoginDate = localStorage.getItem('lastLoginDate');
+if(!lastLoginDate){
+    lastLoginDate = 'last login date not fetched';
+}
+
+const userNameEl = document.getElementById('userName');
+const userIdEl = document.getElementById('userID');
+
+userNameEl.textContent = userName;
+userIdEl.textContent = lastLoginDate;
 
 let url = 'https://api-hfc.techchefz.com/icicihfc-micro-service'
 
@@ -349,16 +366,20 @@ const repaginate = (arr, pageNumber, pageSize) => {
 };
 
 
-// const getSortByValue = (e) => {
-//     let selectedValue = e.target.value
-//     if(selectedValue == '0'){
-//         sortByValue = '';
-//     } else if(selectedValue =='1'){
-//         sortByValue = 'CREATED';
-//     } else if(selectedValue == '2'){
-//         sortByValue = ''
-//     }
-// }
+const getSortByValue = (e) => {
+    let selectedValue = e.target.value
+    if(selectedValue == '0'){
+        sortByValue = '';
+    } else if(selectedValue =='1'){
+        sortByValue = 'CREATED_DATE';
+    } else if(selectedValue == '2'){
+        sortByValue = 'UPDATED_DATE'
+    } else if (selectedValue == '3') {
+        sortByValue = 'AMOUNT'
+    } else{
+        sortByValue = 'PAYMENT_DATE'
+    }
+}
 
 
 const getOrder = (e) => {
@@ -452,7 +473,21 @@ const getString = (e) => {
 
 
 const resetFilters = () => {
-    
+    experienceOverallID = ''
+    experienceRelavantID = ''
+    departmentID = ''
+    roleID = ''
+    zoneID = ''
+    jobLocationID = ''
+    sortByValue = ''
+    isAscending = false
+    startDateValue = ''
+    endDateValue = ''
+    dateTypeValue = ''
+    candidateTypeValue = ''
+    candidateStatusValue = ''
+    queryValue = ''
+    getCandidates(0, 10);
 }
 
 

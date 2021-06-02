@@ -23,6 +23,8 @@ const getLoginDetails = async (keyString) => {
         if (response.status === 200) {
             const datum = await response.json()
             localStorage.setItem('token', datum.data.accessToken)
+            localStorage.setItem('loginUserName', datum.data.firstName + ' ' + datum.data.lastName)
+            localStorage.setItem('lastLoginDate', datum.data.lastLoginDate)
             console.log(window.location)
             window.location = window.location.href.split('/index.html')[0] + '/templates/table.html'
             console.log(window.location)
