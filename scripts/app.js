@@ -32,8 +32,7 @@ const getLoginDetails = async (keyString) => {
             throw new Error('Unable to get experience')
         }
     } catch (e) {
-        console.log('Invalid credentials!')
-        alert('Invalid credentials!')
+        alert('Unable to get experience')
     }
     
 }
@@ -42,6 +41,17 @@ const employeeID = document.getElementById('employeeID')
 const password = document.getElementById('password')
 
 const getInputObj = () => {
+    if (employeeID.value === ' ' || employeeID.value === ''){
+        employeeID.classList.add('is-invalid')
+    } else{
+        employeeID.classList.remove('is-invalid')
+    }
+
+    if (password.value === ' ' || password.value=== '') {
+        password.classList.add('is-invalid')
+    } else {
+        password.classList.remove('is-invalid')
+    }
     const inputObj = {
         employeeId: employeeID.value,
         employeeDomain: "RMS",

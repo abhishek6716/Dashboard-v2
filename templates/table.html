@@ -9,10 +9,12 @@
 
     <!-- Style-CSS -->
     <link rel="stylesheet" href="./../css/style.css" />
+    <link rel="stylesheet" href="./../css/bootstrap-datepicker.standalone.min.css">
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
         integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous" />
-
+    
     <!-- Bootstrap Popper and Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
@@ -23,6 +25,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"
         integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF"
         crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <!-- Include Handlebars from a CDN -->
@@ -83,11 +86,11 @@
                                 <div class="form-row">
                                     <div class="col">
                                         <label for="startDate">Start Date:</label>
-                                        <input type="text" id="startDate" class="form-control datepicker" placeholder="DD-MM-YYYY" maxlength="10" onchange="getStartDate(event)">
+                                        <input type="text" id="startDate" class="form-control datepicker" placeholder="DD-MM-YYYY" data-date-format="dd-mm-yyyy" autocomplete="off" onkeydown="event.preventDefault()" maxlength="10" onchange="getStartDate(event)">
                                     </div>
                                     <div class="col">
                                         <label for="endDate">End Date:</label>
-                                        <input type="text" id="endDate" class="form-control" placeholder="DD-MM-YYYY" maxlength="10" onchange="getEndDate(event)">
+                                        <input type="text" id="endDate" class="form-control datepicker" placeholder="DD-MM-YYYY" data-date-format="dd-mm-yyyy" autocomplete="off" onkeydown="event.preventDefault()" maxlength="10" onchange="getEndDate(event)">
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -226,6 +229,7 @@
         </div>
     </div>
     
+    <script src="../scripts/bootstrap-datepicker.min.js"></script>
     <script src="../scripts/pagination.min.js"></script>
     <script src="../scripts/table.js"></script>
 

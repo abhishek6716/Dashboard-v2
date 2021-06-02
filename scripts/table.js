@@ -393,8 +393,6 @@ const getOrder = (e) => {
     }
 }
 
-let isStartDateSelected = false;
-let isEndDateSelected = false;
 const getStartDate = (e) => {
     let inputValue = e.target.value;
     startDateValue = inputValue; 
@@ -455,8 +453,12 @@ const getCandidateStatus = (e) => {
 }
 
 document.getElementById('button').addEventListener('click', (e) => {
-    const pageSize = $('#pageSize').val();
-    getCandidates(0, pageSize);
+    if((!startDateValue && !endDateValue) || (startDateValue && endDateValue)){
+        const pageSize = $('#pageSize').val();
+        getCandidates(0, pageSize);
+    } else{
+        alert('select both starting and ending value or leave them both!')
+    }
 })
 
 const getString = (e) => {
@@ -489,6 +491,14 @@ const resetFilters = () => {
     queryValue = ''
     getCandidates(0, 10);
 }
+
+
+$(function () {
+    $('.datepicker').datepicker();
+});
+
+
+
 
 
 
