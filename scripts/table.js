@@ -9,11 +9,11 @@ const redirectPage = () => {
 }
 
 const userName = localStorage.getItem('loginUserName');
-if(!userName){
+if (!userName) {
     userName = 'user name not fetched';
 }
 const lastLoginDate = localStorage.getItem('lastLoginDate');
-if(!lastLoginDate){
+if (!lastLoginDate) {
     lastLoginDate = 'last login date not fetched';
 }
 
@@ -126,9 +126,9 @@ function setReleventEl() {
 
 overallExperience.addEventListener('change', (e) => {
     let selectedValue = e.target.value;
-    if(selectedValue === '0'){
+    if (selectedValue === '0') {
         experienceOverallID = '';
-    } else{
+    } else {
         experienceOverallID = selectedValue;
     }
 });
@@ -197,9 +197,9 @@ function setRoleEl(selectedDep) {
     role.disabled = false;
     role.addEventListener('change', (e) => {
         let selectedValue = e.target.value;
-        if(selectedValue === '0'){
+        if (selectedValue === '0') {
             roleID = '';
-        } else{
+        } else {
             roleID = selectedValue;
         }
     });
@@ -247,9 +247,9 @@ function setBranchesEl() {
     branch.disabled = false;
     branch.addEventListener('change', (e) => {
         let selectedValue = e.target.value;
-        if(selectedValue === '0'){
+        if (selectedValue === '0') {
             jobLocationID = '';
-        } else{
+        } else {
             jobLocationID = selectedValue
         }
     });
@@ -330,11 +330,17 @@ const insertTable = (candidatesData, pageNo, pageSize) => {
             <td>{{role.department.name}}</td>
             <td>{{jobLocation.branch}}</td>
             <td>{{createdDate}}</td>
-            <td>{{lastStatusChangeDate}}</td>
+            <td><button  class="btn btn-secondary"  id="example">
+                Details
+                </button>
+            </td>
             <td>{{updatedDate}}</td>
             <td>{{candidateStatus}}</td>
             <td>{{candidateId}}</td>
-            <td>{{remarks}}</td>
+            <td><button type="button" class="btn btn-secondary" data-placement="left" data-toggle="tooltip" data-html="true" title="Remarks : {{remarks}}">
+               Details
+               </button>
+            </td>
             <td>{{lastUploadDate}}</td>
         </tr>`;
 
@@ -368,15 +374,15 @@ const repaginate = (arr, pageNumber, pageSize) => {
 
 const getSortByValue = (e) => {
     let selectedValue = e.target.value
-    if(selectedValue == '0'){
+    if (selectedValue == '0') {
         sortByValue = '';
-    } else if(selectedValue =='1'){
+    } else if (selectedValue == '1') {
         sortByValue = 'CREATED_DATE';
-    } else if(selectedValue == '2'){
+    } else if (selectedValue == '2') {
         sortByValue = 'UPDATED_DATE'
     } else if (selectedValue == '3') {
         sortByValue = 'AMOUNT'
-    } else{
+    } else {
         sortByValue = 'PAYMENT_DATE'
     }
 }
@@ -384,18 +390,18 @@ const getSortByValue = (e) => {
 
 const getOrder = (e) => {
     let selectedValue = e.target.value;
-    if(selectedValue === '0'){
+    if (selectedValue === '0') {
         isAscending = false;
-    } else if(selectedValue === '1'){
+    } else if (selectedValue === '1') {
         isAscending = true;
-    } else{
+    } else {
         isAscending = false;
     }
 }
 
 const getStartDate = (e) => {
     let inputValue = e.target.value;
-    startDateValue = inputValue; 
+    startDateValue = inputValue;
 }
 
 const getEndDate = (e) => {
@@ -409,11 +415,11 @@ const getDateType = (e) => {
         dateTypeValue = '';
     } else if (selectedValue === '1') {
         dateTypeValue = 'CREATED_DATE'
-    } else if (selectedValue === '2'){
+    } else if (selectedValue === '2') {
         dateTypeValue = 'LAST_STATUS_CHANGE_DATE'
-    } else if (selectedValue === '3'){
+    } else if (selectedValue === '3') {
         dateTypeValue = 'LAST_UPDATED_DATE'
-    } else{
+    } else {
         dateTypeValue = 'LAST_UPLOAD_DATE'
     }
 }
@@ -428,7 +434,7 @@ const getCandidateType = (e) => {
         candidateTypeValue = 'EMPLOYEE'
     } else if (selectedValue === '3') {
         candidateTypeValue = 'HR'
-    } else if(selectedValue === '4'){
+    } else if (selectedValue === '4') {
         candidateTypeValue = 'RECRUITMENT_AGENCY'
     } else {
         candidateTypeValue = 'ALL'
@@ -445,7 +451,7 @@ const getCandidateStatus = (e) => {
         candidateStatusValue = 'SHORT_LISTED'
     } else if (selectedValue === '3') {
         candidateStatusValue = 'HOLD'
-    } else if (selectedValue === '4'){
+    } else if (selectedValue === '4') {
         candidateStatusValue = 'REJECTED'
     } else {
         candidateStatusValue = 'ALL'
@@ -453,10 +459,10 @@ const getCandidateStatus = (e) => {
 }
 
 document.getElementById('button').addEventListener('click', (e) => {
-    if((!startDateValue && !endDateValue) || (startDateValue && endDateValue)){
+    if ((!startDateValue && !endDateValue) || (startDateValue && endDateValue)) {
         const pageSize = $('#pageSize').val();
         getCandidates(0, pageSize);
-    } else{
+    } else {
         alert('select both starting and ending value or leave them both!')
     }
 })
@@ -464,9 +470,9 @@ document.getElementById('button').addEventListener('click', (e) => {
 const getString = (e) => {
     queryValue = '';
     let inputStr = e.target.value;
-    if(inputStr === ' '){
+    if (inputStr === ' ') {
         alert('Enter valid string!');
-    } else{
+    } else {
         queryValue = inputStr;
         const pageSize = $('#pageSize').val();
         getCandidates(0, pageSize);
@@ -496,6 +502,17 @@ const resetFilters = () => {
 $(function () {
     $('.datepicker').datepicker();
 });
+
+
+
+// $(function () {
+//     $('#example').tooltip({
+//         html: true,
+//         placement: "left",
+//         title: "<h2>hello tooltip</h2>"
+//     })
+// })
+
 
 
 
