@@ -29,10 +29,10 @@ const getLoginDetails = async (keyString) => {
             window.location = window.location.href.split('/index.html')[0] + '/templates/table.html'
             console.log(window.location)
         } else {
-            throw new Error('Unable to get experience')
+            throw new Error('employeeID or password is wrong')
         }
     } catch (e) {
-        alert('Unable to get experience')
+        alert('employeeID or password is wrong')
     }
     
 }
@@ -41,24 +41,27 @@ const employeeID = document.getElementById('employeeID')
 const password = document.getElementById('password')
 
 const getInputObj = () => {
-    if (employeeID.value === ' ' || employeeID.value === ''){
-        employeeID.classList.add('is-invalid')
-    } else{
-        employeeID.classList.remove('is-invalid')
-    }
+    if (employeeID.value === ' ' || employeeID.value === '' || password.value === ' ' || password.value === ''){
+        if (employeeID.value === ' ' || employeeID.value === ''){
+            employeeID.classList.add('is-invalid')
+        } else{
+            employeeID.classList.remove('is-invalid')
+        }
 
-    if (password.value === ' ' || password.value=== '') {
-        password.classList.add('is-invalid')
-    } else {
-        password.classList.remove('is-invalid')
+        if (password.value === ' ' || password.value === ''){
+            password.classList.add('is-invalid')
+        } else{
+            password.classList.remove('is-invalid')
+        }
+    } else{
+        const inputObj = {
+            employeeId: employeeID.value,
+            employeeDomain: "RMS",
+            password: password.value
+        }
+        console.log(inputObj)
+        getKey(inputObj)
     }
-    const inputObj = {
-        employeeId: employeeID.value,
-        employeeDomain: "RMS",
-        password: password.value
-    }
-    console.log(inputObj)
-    getKey(inputObj)
 }
 
 const getKey = (obj) => {
