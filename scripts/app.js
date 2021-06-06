@@ -19,7 +19,7 @@ const getLoginDetails = async (keyString) => {
     };
 
     try{
-        const response = await fetch("https://api-hfc.techchefz.com/icicihfc-micro-service/employee/login", requestOptions)
+        const response = await fetch("https://api-hfc.techchefz.com/icicihfc-micro-service/employee/login/ad", requestOptions)
         if (response.status === 200) {
             const datum = await response.json()
             localStorage.setItem('token', datum.data.accessToken)

@@ -274,16 +274,16 @@ const getOrder = (e) => {
 const getStartDate = (e) => {
     let inputValue = e.target.value;
     startDateFilterVal = inputValue;
+    setPicker2StartDate(inputValue)
 }
 
 const getEndDate = (e) => {
-    if (startDateFilterVal !== '') {
-        datePicker2(startDateFilterVal, new Date())
-    } else {
-        datePicker2('', new Date())
-    }
     let inputValue = e.target.value;
     endDateFilterVal = inputValue;
+}
+
+const setPicker2StartDate = (newStartDate) => { 
+    $(".datepicker2").datepicker('setStartDate' , newStartDate)
 }
 
 const getDateType = (e) => {
@@ -434,7 +434,7 @@ const changePageSize = () => {
 
 
 const insertTable = (candidatesData, pageNo, pageSize) => {
-    $('tbody').html('');
+    $('#mainDataTable').html('');
     let row = `<tr>
             <td>{{sno}}</td>
             <td>{{fullName}}</td>
@@ -458,14 +458,14 @@ const insertTable = (candidatesData, pageNo, pageSize) => {
             </td>
             <td><a href="{{resumeDocRefLink}}" target="_blank">Download</a></td>
             <td><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#updateModal" onclick="getUpdateForm(this)">Update</button></td>
-            <td><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#downloadedByModal">Check</button></td>
+            <td><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#downloadedByModal" onclick="getDownloadedByColumn(this)">Check</button></td>
          </tr>`;
 
     let template = Handlebars.compile(row);
-    console.log(template(template))
+    template(template);
     for (let i = 0; i < candidatesData.length; i++) {
         candidatesData[i].sno = (pageNo - 1) * pageSize + (i + 1);
-        $('tbody').append(template(candidatesData[i]));
+        $('#mainDataTable').append(template(candidatesData[i]));
         $(function () {
             $("[rel='tooltip']").tooltip();
         });
@@ -478,7 +478,6 @@ const repaginate = (arr, pageNumber, pageSize) => {
         pageSize,
         pageNumber,
         callback: (data, pagination) => {
-            console.log(pagination);
         },
     });
     $('#pagination').addHook('afterPageOnClick', (data, pageNumber) => {
@@ -494,11 +493,11 @@ const repaginate = (arr, pageNumber, pageSize) => {
 
 //////////// reset filters //////////////
 const resetFilters = () => {
-    expOverallIDFilterVal = '',
-    expRelavantIDFilterVal = '',
-    departmentIDFilterVal = '',
-    roleIDFilterVal = '',
-    zoneIDFilterVal = '',
+    expOverallIDFilterVal = ''
+    expRelavantIDFilterVal = ''
+    departmentIDFilterVal = ''
+    roleIDFilterVal = ''
+    zoneIDFilterVal = ''
     jobLocationIDFilterVal = ''
     sortByFilterVal = ''
     isAscendingFilterVal = false
@@ -508,35 +507,32 @@ const resetFilters = () => {
     candidateTypeFilterVal = ''
     candidateStatusFilterVal = ''
     queryFilterVal = ''
-    $('.datepicker1').val("").datepicker("update");
-    $('.datepicker2').val("").datepicker("update");
+    $('.datepicker1').val("")
+    $('.datepicker2').val("")
     getCandidates(0, 10);
 }
 
 ////// Date validation ////////
-let date = new Date();
-date.setDate(date.getDate());
-let startDate, endDate = date;
-const datePicker1 = (startDate, endDate) => {
+const date = new Date(); 
+const endDate = date;
+const datePicker1 = (endDate) => {
     $('.datepicker1').datepicker({
-        startDate: startDate,
         endDate: endDate,
         autoclose: true,
         clearBtn: true,
     });
 }
 
-const datePicker2 = (startDate, endDate) => {
-    $('.datepicker2').datepicker({
-        startDate: startDate,
+const datePicker2 = (endDate) => { 
+    $('.datepicker2').datepicker({ 
         endDate: endDate,
         autoclose: true,
         clearBtn: true,
     });
 }
 
-datePicker1(startDate, endDate);
-datePicker2(startDate, endDate);
+datePicker1(endDate);
+datePicker2(endDate);
 
 // let date = new Date(); 
 // date.setDate(date.getDate());
@@ -919,34 +915,128 @@ submitBtn.addEventListener('click', (e) => {
     }
 });
 
+/////////////////////    DownloadBy Section //////////////////////
 
-////////////////////////  table and pagination section  ///////////////////////////
+const getDownloadedByData = async (candidateID) => {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
 
-// let candidateId;
-// function getCandidateId(tr){
-//     console.log(tr.children[9].textContent)
-//     candidateId = tr.children[9].textContent
-// }
+    var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
 
-// const getUpdateForm = (updateBtnTag) => {
-//     console.log(accessToken)
+    const response = await fetch(`https://api-hfc.techchefz.com/icicihfc-micro-service/rms/dashboard/get/download/records/by/candidate/id?candidateId=${candidateID}`, requestOptions)
+    if(response.status === 200){
+        const datum = await response.json()
+        insertDownloadByModal(candidateID, datum.data)
+    } else{
+        throw new Error('Unable to get downloadedBy data!')
+    }
+}
 
-//     console.log(updateBtnTag.parentElement.parentElement.children[9].textContent)
-//     let candidateId = updateBtnTag.parentElement.parentElement.children[9].textContent
+function getDownloadedByColumn(ref){
+    const candidateID = ref.parentNode.parentNode.children[9].textContent;
+    getDownloadedByData(candidateID); 
+}
 
-//     var settings = {
-//         "url": `https://api-hfc.techchefz.com/icicihfc-micro-service/rms/dashboard/get/by/candidate/id?${candidateId}`,
-//         "method": "GET",
-//         "timeout": 0,
-//         "headers": {
-//             "Authorization": `Bearer ${accessToken}`,
-//         },
-//     };
+const insertDownloadByModal = (candidateID, ArrayData) => {
+    $('#downloadedByModalLabel').text(candidateID)
+    $('#downloadByModalBody').html('')
+    if(ArrayData.length === 0 ){
+        let trTemp = `<tr><td>Not Downloaded By Anyone!</td></tr>`;
+        let compliedTrTemp = Handlebars.compile(trTemp);
+        $('#downloadByModalBody').append(compliedTrTemp());
+    } else{
+        let trTemp = `<tr>
+        <td>{{sno}}</td>
+        <td>{{downloadedBy.employeeId}}</td>
+        <td>{{downloadedBy.firstName}} {{downloadedBy.lastName}}</td>
+        <td>{{downloadedBy.email}}</td>
+        <td>{{downloadedBy.mobileNumber}}</td>
+        <td>{{createdDate}}</td>
+        </tr>`;
 
-//     $.ajax(settings).done(function (response) {
-//         console.log(response);
-//     });
-// }
+        let compliedTrTemp = Handlebars.compile(trTemp);
+        for(let i=0; i<ArrayData.length; i++){
+            ArrayData[i].sno = i+1;
+            $('#downloadByModalBody').append(compliedTrTemp(ArrayData[i]));
+        }
+    }
+}
+
+//////////////////////    Update //////////////////////////
+
+const getCandidateData = async (candidateID) => {
+    let myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+
+    let requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
+
+    try{
+        const response = fetch(`https://api-hfc.techchefz.com/icicihfc-micro-service/rms/dashboard/get/by/candidate/id?candidateId=${candidateID}`, requestOptions);
+        if (response.status === 200) {
+            const data = await response
+            console.log(data);
+        } else {
+            throw new Error('Unable to fetch data!');
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+function getUpdateForm(ref) {
+    const candidateID = ref.parentNode.parentNode.children[9].textContent;
+    console.log(candidateID);
+    getCandidateData(candidateID)
+}
+
+///////////////////     Download All  //////////////////////
+
+const downloadBtn = document.getElementById('downloadAllBtn')
+
+downloadBtn.addEventListener('click', () => {
+    downloadAllData('EXCEL');
+})
+
+const downloadAllData = async (downloadType) => {
+    var myHeaders = new Headers();
+    myHeaders.append('Authorization', `Bearer ${accessToken}`);
+    myHeaders.append('responseType', 'arrayBuffer');
+
+    var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
+
+    try {
+        const response = await fetch(`https://api-hfc.techchefz.com/icicihfc-micro-service/rms/dashboard/get/all/candidates/download?sortBy=${sortByFilterVal}&ascending=${isAscendingFilterVal}&startDate=${startDateFilterVal}&endDate=${endDateFilterVal}&dateFilterType=${dateTypeFilterVal}&candidateType=${candidateTypeFilterVal}&query=${queryFilterVal}&agencyId=&downloadType=${downloadType}&experienceOverallId=${expOverallIDFilterVal}&zoneName=${zoneIDFilterVal}&experienceRelevantId=${expRelavantIDFilterVal}&roleId=${roleIDFilterVal}&jobLocationId=${jobLocationIDFilterVal}&candidateStatus=${candidateStatusFilterVal}`, requestOptions)
+        if (response.status === 200){
+            console.log(response);
+            const data = await response.arrayBuffer();
+            const blob = new Blob([data], {
+                type: 'application/octet-stream'
+            });
+            const linkElem = document.createElement('a')
+            linkElem.href = URL.createObjectURL(blob)
+            linkElem.download= "icici-data.xls"
+            document.body.appendChild(linkElem)
+            linkElem.click()
+            document.body.removeChild(linkElem)
+        } else{
+            throw new Error('Unable to fetch data!');
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 
 

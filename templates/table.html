@@ -60,6 +60,7 @@
             <button id="showFilterBtn" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal1">ShowFilters</button>
             <button id="resetFilterBtn" class="btn btn-danger" onclick="resetFilters()">Reset Filters</button>
             <button id="createNewBtn" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">CreateNew</button>
+            <button id="downloadAllBtn" class="btn btn-primary" >Download</button>
         </div>
         <div style="display: inline;">
             <input id="search" type="text" placeholder="Type Here" oninput="getString(event)">
@@ -322,7 +323,7 @@
 
 
     <!-- Data table -->
-    <div class="container">
+    <div class="container" style="overflow-x: scroll;">
         <table id="reportTable" class="table table-sm table-bordered table-striped table-fixed">
             <thead>
                 <tr>
@@ -342,7 +343,7 @@
                     <th scope="col">Downloaded By</th>
                 </tr>
             </thead>
-            <tbody id="">
+            <tbody id="mainDataTable">
             </tbody>
         </table>
     </div>
@@ -476,12 +477,12 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="downloadedByModalLabel">Downloaded By Table</h5>
+                    <h5 class="modal-title" id="downloadedByModalLabel"></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="overflow-x: scroll;">
                     <div class="container-fluid">
                         <table id="reportTable" class="table table-sm table-bordered table-striped table-fixed">
                             <thead>
@@ -494,13 +495,10 @@
                                     <th scope="col">Downloaded On</th>
                                 </tr>
                             </thead>
-                            <!-- <tbody>
-                            </tbody> -->
+                            <tbody id="downloadByModalBody">
+                            </tbody>
                         </table>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success" >Submit</button>
                 </div>
             </div>
         </div>
