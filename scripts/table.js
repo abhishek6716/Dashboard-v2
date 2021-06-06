@@ -282,8 +282,8 @@ const getEndDate = (e) => {
     endDateFilterVal = inputValue;
 }
 
-const setPicker2StartDate = (newStartDate) => { 
-    $(".datepicker2").datepicker('setStartDate' , newStartDate)
+const setPicker2StartDate = (newStartDate) => {
+    $(".datepicker2").datepicker('setStartDate', newStartDate)
 }
 
 const getDateType = (e) => {
@@ -378,14 +378,29 @@ zoneFilterNode.addEventListener('change', (e) => {
 });
 
 filterBtn.addEventListener('click', (e) => {
-    if ((!startDateFilterVal && !endDateFilterVal) || (startDateFilterVal && endDateFilterVal)) {
-        const pageSize = $('#pageSize').val();
-        getCandidates(0, pageSize);
-    } else if (startDateFilterVal > startDateFilterVal) {
+    if ((!startDateFilterVal && endDateFilterVal) || (startDateFilterVal && !endDateFilterVal)) {
+        if (!startDateFilterVal) {
+            $(".datepicker1").focus()
+            alert('select start date value!')
+        }
+        if (!endDateFilterVal) {
+            $(".datepicker2").focus()
+            alert('select end date value!')
+        }
+    } else if (startDateFilterVal > endDateFilterVal) {
         alert('starting date not be greater then ending date')
     } else {
-        alert('select both starting and ending value or leave them both!')
+        const pageSize = $('#pageSize').val();
+        getCandidates(0, pageSize);
     }
+    // if ((!startDateFilterVal && !endDateFilterVal) || (startDateFilterVal && endDateFilterVal)) {
+    //     const pageSize = $('#pageSize').val();
+    //     getCandidates(0, pageSize);
+    // } else if (startDateFilterVal > endDateFilterVal) {
+    //     alert('starting date not be greater then ending date')
+    // } else {
+    //     alert('select both starting and ending value or leave them both!')
+    // }
 })
 
 //////////////// searching //////////////
@@ -513,7 +528,7 @@ const resetFilters = () => {
 }
 
 ////// Date validation ////////
-const date = new Date(); 
+const date = new Date();
 const endDate = date;
 const datePicker1 = (endDate) => {
     $('.datepicker1').datepicker({
@@ -523,8 +538,8 @@ const datePicker1 = (endDate) => {
     });
 }
 
-const datePicker2 = (endDate) => { 
-    $('.datepicker2').datepicker({ 
+const datePicker2 = (endDate) => {
+    $('.datepicker2').datepicker({
         endDate: endDate,
         autoclose: true,
         clearBtn: true,
@@ -576,8 +591,8 @@ let fullNameCreate = '',
     zoneIDCreateVal = '',
     jobLocationIDCreateVal = '',
     resumeIDCreateVal = 'notUploaded',
-    resumeNameCreateVal,
-    resumeNonceCreateVal;
+    resumeNameCreateVal = '',
+    resumeNonceCreateVal = '';
 
 let IsFullNameValidCreate = false,
     IsEmailValidCreate = false,
@@ -826,19 +841,40 @@ const upload = (e) => {
 
     $.ajax(settings).done(function (response) {
         const data = JSON.parse(response).data;
-        if(data){
+        if (data) {
             resumeIDCreateVal = data.id;
             resumeNameCreateVal = data.name;
             resumeNonceCreateVal = data.nonce;
             alert('file uploaded successfully!')
-        } else{
+        } else {
             alert('file not uploaded!')
         }
-        
+
     });
 };
 
 ///////////////////////////////// FORM SUBMITTING REQUEST ///////////////////////////////////
+
+const clearFieldsAndCloseModal = () => {
+    // fullNameCreate = ''
+    // emailIDCreate = ''
+    // mobileNoCreate = ''
+    // overallExpIDCreateVal = ''
+    // relavantExpIDCreateVal = ''
+    // departmentIDCreateVal = ''
+    // roleIDCreateVal = ''
+    // zoneIDCreateVal = ''
+    // jobLocationIDCreateVal = ''
+    // resumeIDCreateVal = 'notUploaded'
+    // resumeNameCreateVal = ''
+    // resumeNonceCreateVal = ''
+
+    // IsFullNameValidCreate = false,
+    // IsEmailValidCreate = false,
+    // IsMobileNoValidCreate = false,
+    // IsFileAttachedCreate = false;
+    $('#exampleModal2').modal('hide');
+}
 
 function formSubmit() {
     const obj = {
@@ -869,6 +905,7 @@ function formSubmit() {
         console.log(response);
     });
     console.log(obj);
+    clearFieldsAndCloseModal();
 }
 
 
@@ -928,27 +965,27 @@ const getDownloadedByData = async (candidateID) => {
     };
 
     const response = await fetch(`https://api-hfc.techchefz.com/icicihfc-micro-service/rms/dashboard/get/download/records/by/candidate/id?candidateId=${candidateID}`, requestOptions)
-    if(response.status === 200){
+    if (response.status === 200) {
         const datum = await response.json()
         insertDownloadByModal(candidateID, datum.data)
-    } else{
+    } else {
         throw new Error('Unable to get downloadedBy data!')
     }
 }
 
-function getDownloadedByColumn(ref){
+function getDownloadedByColumn(ref) {
     const candidateID = ref.parentNode.parentNode.children[9].textContent;
-    getDownloadedByData(candidateID); 
+    getDownloadedByData(candidateID);
 }
 
 const insertDownloadByModal = (candidateID, ArrayData) => {
     $('#downloadedByModalLabel').text(candidateID)
     $('#downloadByModalBody').html('')
-    if(ArrayData.length === 0 ){
+    if (ArrayData.length === 0) {
         let trTemp = `<tr><td>Not Downloaded By Anyone!</td></tr>`;
         let compliedTrTemp = Handlebars.compile(trTemp);
         $('#downloadByModalBody').append(compliedTrTemp());
-    } else{
+    } else {
         let trTemp = `<tr>
         <td>{{sno}}</td>
         <td>{{downloadedBy.employeeId}}</td>
@@ -959,8 +996,8 @@ const insertDownloadByModal = (candidateID, ArrayData) => {
         </tr>`;
 
         let compliedTrTemp = Handlebars.compile(trTemp);
-        for(let i=0; i<ArrayData.length; i++){
-            ArrayData[i].sno = i+1;
+        for (let i = 0; i < ArrayData.length; i++) {
+            ArrayData[i].sno = i + 1;
             $('#downloadByModalBody').append(compliedTrTemp(ArrayData[i]));
         }
     }
@@ -978,7 +1015,7 @@ const getCandidateData = async (candidateID) => {
         redirect: 'follow'
     };
 
-    try{
+    try {
         const response = fetch(`https://api-hfc.techchefz.com/icicihfc-micro-service/rms/dashboard/get/by/candidate/id?candidateId=${candidateID}`, requestOptions);
         if (response.status === 200) {
             const data = await response
@@ -1018,7 +1055,7 @@ const downloadAllData = async (downloadType) => {
 
     try {
         const response = await fetch(`https://api-hfc.techchefz.com/icicihfc-micro-service/rms/dashboard/get/all/candidates/download?sortBy=${sortByFilterVal}&ascending=${isAscendingFilterVal}&startDate=${startDateFilterVal}&endDate=${endDateFilterVal}&dateFilterType=${dateTypeFilterVal}&candidateType=${candidateTypeFilterVal}&query=${queryFilterVal}&agencyId=&downloadType=${downloadType}&experienceOverallId=${expOverallIDFilterVal}&zoneName=${zoneIDFilterVal}&experienceRelevantId=${expRelavantIDFilterVal}&roleId=${roleIDFilterVal}&jobLocationId=${jobLocationIDFilterVal}&candidateStatus=${candidateStatusFilterVal}`, requestOptions)
-        if (response.status === 200){
+        if (response.status === 200) {
             console.log(response);
             const data = await response.arrayBuffer();
             const blob = new Blob([data], {
@@ -1026,11 +1063,11 @@ const downloadAllData = async (downloadType) => {
             });
             const linkElem = document.createElement('a')
             linkElem.href = URL.createObjectURL(blob)
-            linkElem.download= "icici-data.xls"
+            linkElem.download = "icici-data.xls"
             document.body.appendChild(linkElem)
             linkElem.click()
             document.body.removeChild(linkElem)
-        } else{
+        } else {
             throw new Error('Unable to fetch data!');
         }
     } catch (error) {
