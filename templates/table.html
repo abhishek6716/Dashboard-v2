@@ -31,6 +31,8 @@
         crossorigin="anonymous"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <script src="https://stevenlevithan.com/assets/misc/date.format.js"></script>
+
     <!-- Include Handlebars from a CDN -->
     <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
 </head>
@@ -304,8 +306,8 @@
                                 <div class="form-group">
                                     <label for="attachFileCreate">Attach File:</label>
                                     <input id="attachFileCreate" type="file" class="form-control-file">
-                                    <button id="uploadBtnCreate" type="button" class="btn btn-outline-primary" onclick="upload()"
-                                        disabled>Upload</button>
+                                    <!-- <button id="uploadBtnCreate" type="button" class="btn btn-outline-primary" onclick="upload()"
+                                        disabled>Upload</button> -->
                                     <small id="namevalid" class="form-text text-muted invalid-feedback">
                                         Selected file must be less then 5MB size and of pdf or doc or docx format!
                                     </small>
@@ -379,7 +381,7 @@
                         <div class="form-row">
                             <div class="col form-group">
                                 <label for="fullName">Full Name:</label>
-                                <input type="text" class="form-control"  placeholder="Enter Name"
+                                <input type="text" id="fullNameUpdate" class="form-control"  placeholder="Enter Name"
                                     maxlength="50" oninput="" onkeypress="return /[a-z]| /i.test(event.key)">
                                 <small id="namevalid" class="form-text text-muted invalid-feedback">
                                     Enter valid Full Name!
@@ -387,8 +389,7 @@
                             </div>
                             <div class="col">
                                 <label for="email">Email:</label>
-                                <input type="email" class="form-control"  placeholder="Enter Email" oninput=""
-                                    maxlength="50">
+                                <input type="email" id="emailUpdate" class="form-control"  placeholder="Enter Email" oninput="" maxlength="50">
                                 <small id="namevalid" class="form-text text-muted invalid-feedback">
                                     Enter valid Email!
                                 </small>
@@ -397,7 +398,7 @@
                         <div class="form-row">
                             <div class="col">
                                 <label for="mobileNo">Mobile No:</label>
-                                <input type="number" class="form-control"  placeholder="Enter Mobile No"
+                                <input type="number" id="mobileNoUpdate" class="form-control"  placeholder="Enter Mobile No"
                                     oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                     maxlength="10">
                                 <small id="namevalid" class="form-text text-muted invalid-feedback">
@@ -406,7 +407,7 @@
                             </div>
                             <div class="col">
                                 <label for="overallExperience">Overall Experience:</label>
-                                <select class="form-control" >
+                                <select class="form-control" id="overallExpUpdate">
                                     <option value="0">Select</option>
                                 </select>
                             </div>
@@ -414,13 +415,13 @@
                         <div class="form-row">
                             <div class="col">
                                 <label for="relaventExperience">Relavent Experience:</label>
-                                <select class="form-control" >
+                                <select class="form-control" id="relaventExpUpdate" >
                                     <option value="0">Select</option>
                                 </select>
                             </div>
                             <div class="col">
                                 <label for="department">Department:</label>
-                                <select class="form-control" >
+                                <select class="form-control" id="departmentUpdate" >
                                     <option value="0">Select</option>
                                 </select>
                             </div>
@@ -428,14 +429,14 @@
                         <div class="form-row">
                             <div class="col form-group">
                                 <label for="role">Role:</label>
-                                <select class="form-control"  disabled>
+                                <select class="form-control" id="roleUpdate">
                                     <option value="0">Select</option>
                                 </select>
                             </div>
                             <div class="col">
                                 <div class="form-group">
                                     <label for="zone">Zone:</label>
-                                    <select class="form-control" >
+                                    <select class="form-control" id="zoneUpdate" >
                                         <option value="0">Select</option>
                                     </select>
                                 </div>
@@ -445,7 +446,7 @@
                             <div class="col">
                                 <div class="form-group">
                                     <label for="branch">Branch:</label>
-                                    <select class="form-control"  disabled>
+                                    <select class="form-control" id="branchUpdate">
                                         <option value="0">Select</option>
                                     </select>
                                 </div>
@@ -453,9 +454,7 @@
                             <div class="col">
                                 <div class="form-group">
                                     <label for="attachFile">Attach File:</label>
-                                    <input  type="file" class="form-control-file">
-                                    <button  type="button" class="btn btn-outline-primary" onclick="upload()"
-                                        disabled>Upload</button>
+                                    <input  type="file" class="form-control-file" id="attachFileUpdate">
                                     <small id="namevalid" class="form-text text-muted invalid-feedback">
                                         Selected file must be less then 5MB size and of pdf or doc or docx format!
                                     </small>
@@ -465,7 +464,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" >Submit</button>
+                    <button type="button" id="updateBtn" class="btn btn-success" >Update</button>
                 </div>
             </div>
         </div>
@@ -483,9 +482,10 @@
                     </button>
                 </div>
                 <div class="modal-body" style="overflow-x: scroll;">
-                    <div class="container-fluid">
-                        <table id="reportTable" class="table table-sm table-bordered table-striped table-fixed">
-                            <thead>
+                    <div class="container-fluid" id="tableContainer">
+                        <div id="NA" style="display: flex; justify-content: center;"><em>Not Downloaded by anyone!</em></div>
+                        <table id="downloadedByTable" class="table table-sm table-bordered table-striped table-fixed">
+                            <thead id="tableHeader">
                                 <tr>
                                     <th scope="col">S.No</th>
                                     <th scope="col">Emp Id</th>

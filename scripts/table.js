@@ -97,6 +97,7 @@ const loadDepAndRoleData = async () => {
     departmentAndRoleData = body.data;
     setDepElFilter();
     setDepElCreate();
+    setDepElUpdate();
 };
 loadDepAndRoleData();
 
@@ -107,6 +108,7 @@ const loadZonesData = async () => {
     zoneData = body.data;
     setZonesElFilter();
     setZonesElCreate();
+    setZonesElUpdate();
 };
 loadZonesData();
 
@@ -393,23 +395,13 @@ filterBtn.addEventListener('click', (e) => {
         const pageSize = $('#pageSize').val();
         getCandidates(0, pageSize);
     }
-    // if ((!startDateFilterVal && !endDateFilterVal) || (startDateFilterVal && endDateFilterVal)) {
-    //     const pageSize = $('#pageSize').val();
-    //     getCandidates(0, pageSize);
-    // } else if (startDateFilterVal > endDateFilterVal) {
-    //     alert('starting date not be greater then ending date')
-    // } else {
-    //     alert('select both starting and ending value or leave them both!')
-    // }
 })
 
 //////////////// searching //////////////
 const getString = (e) => {
     queryValue = '';
     let inputStr = e.target.value;
-    if (inputStr === ' ') {
-        alert('Enter valid string!');
-    } else {
+    if(inputStr.length > 3 || (inputStr === '')){
         queryFilterVal = inputStr;
         const pageSize = $('#pageSize').val();
         getCandidates(0, pageSize);
@@ -576,7 +568,6 @@ const roleCreateNode = document.getElementById('roleCreate');                   
 const zoneCreateNode = document.getElementById('zoneCreate');                                     // toggler
 const branchCreateNode = document.getElementById('branchCreate');                                 // toggler
 const attachFile = document.getElementById('attachFileCreate');                                   // file
-const uploadBtn = document.getElementById('uploadBtnCreate')                                      // button
 const submitBtn = document.getElementById('submitBtnCreate');                                     // button
 
 
@@ -590,15 +581,13 @@ let fullNameCreate = '',
     roleIDCreateVal = '',
     zoneIDCreateVal = '',
     jobLocationIDCreateVal = '',
-    resumeIDCreateVal = 'notUploaded',
+    resumeIDCreateVal = '',
     resumeNameCreateVal = '',
     resumeNonceCreateVal = '';
 
 let IsFullNameValidCreate = false,
     IsEmailValidCreate = false,
-    IsMobileNoValidCreate = false,
-    IsFileAttachedCreate = false;
-
+    IsMobileNoValidCreate = false;
 
 FullNameCreateNode.addEventListener('blur', () => {
     const regex = /[a-zA-Z]/;
@@ -612,6 +601,10 @@ FullNameCreateNode.addEventListener('blur', () => {
         IsFullNameValidCreate = false
     }
 });
+
+FullNameCreateNode.addEventListener('input', () => {
+    FullNameCreateNode.classList.remove('is-invalid');
+})
 
 
 EmailCreateNode.addEventListener('blur', () => {
@@ -628,6 +621,10 @@ EmailCreateNode.addEventListener('blur', () => {
     }
 });
 
+EmailCreateNode.addEventListener('input', () => {
+    EmailCreateNode.classList.remove('is-invalid');
+})
+
 MobileNoCreateNode.addEventListener('blur', () => {
     const regex = /^[6-9]\d{9}$/;
     const str = MobileNoCreateNode.value;
@@ -641,6 +638,10 @@ MobileNoCreateNode.addEventListener('blur', () => {
     }
 });
 
+MobileNoCreateNode.addEventListener('input', () => {
+    MobileNoCreateNode.classList.remove('is-invalid');
+})
+
 
 //////////////////////////// OVERALL AND RELAVENT EXPERIENCE SETUP //////////////////////////
 
@@ -651,6 +652,7 @@ function setOverallElCreate() {
         OptEl.textContent = overallExpData[i].value;
         OptEl.setAttribute('value', overallExpData[i].id);
         overallExpCreateNode.append(OptEl);
+        $('#overallExpUpdate').append(OptEl);
     }
 }
 
@@ -660,6 +662,7 @@ function setRelevantElCreate() {
         OptEl.textContent = relevantExpData[i].value;
         OptEl.setAttribute('value', relevantExpData[i].id);
         relaventExpCreateNode.append(OptEl);
+        $('#relaventExpUpdate').append(OptEl);
     }
 }
 
@@ -725,6 +728,10 @@ function setRoleElCreate(selectedDep) {
         roleCreateNode.append(OptEl);
     }
     roleCreateNode.disabled = false;
+    if(rolesData.length == 1){
+        roleCreateNode.options[1].selected = 'selected';
+        roleIDCreateVal = roleCreateNode.value;
+    }
     roleCreateNode.addEventListener('change', (e) => {
         let selectedValue = e.target.value;
         if (selectedValue === '0') {
@@ -768,6 +775,10 @@ function setBranchesElCreate() {
         branchCreateNode.append(OptEl);
     }
     branchCreateNode.disabled = false;
+    if (BranchesDataCreate.length == 1) {
+        branchCreateNode.options[1].selected = 'selected';
+        jobLocationIDCreateVal = branchCreateNode.value;
+    }
     branchCreateNode.addEventListener('change', (e) => {
         let selectedValue = e.target.value;
         if (selectedValue === '0') {
@@ -795,28 +806,33 @@ zoneCreateNode.addEventListener('change', (e) => {
 
 let fileName
 attachFileCreate.addEventListener('change', function () {
+    if(!this.files[0]){
+        console.log('File Not Attached!')
+        return; 
+    }
     const size = (this.files[0].size / 1024 / 1024).toFixed(2);
     fileName = $(this).val();
-    var extension = fileName.split('.').pop();
-    uploadBtn.disabled = true
+    let extension = fileName.split('.').pop();
 
     if (extension == "pdf" || extension == "docx" || extension == "doc") {
-        if (size < 5) {
-            console.log('Attached correct file!')
-            attachFileCreate.classList.remove('is-invalid')
-            uploadBtn.disabled = false
-            IsFileAttachedCreate = true;
-        } else {
-            alert("File must be less then 5 MB");
-            uploadBtn.disabled = true
+        let arr = fileName.split('.');
+        if(arr.length <= 2){
+            attachFileCreate.classList.remove('is-invalid');
+            if (size < 5) {
+                console.log('Attached correct file!')
+                attachFileCreate.classList.remove('is-invalid')
+                upload();
+            } else {
+                alert("File must be less then 5 MB");
+                attachFileCreate.classList.add('is-invalid')
+            }
+        } else{
+            alert('multi extension file not allowed!');
             attachFileCreate.classList.add('is-invalid')
-            IsFileAttachedCreate = false;
         }
     } else {
         alert('File format must be pdf or docx or doc')
-        uploadBtn.disabled = true
         attachFileCreate.classList.add('is-invalid')
-        IsFileAttachedCreate = false;
     }
 });
 
@@ -824,7 +840,7 @@ attachFileCreate.addEventListener('change', function () {
 
 
 const resume = document.getElementById('attachFileCreate');
-const upload = (e) => {
+const upload = () => {
     // e.preventDefault()
     const form = new FormData();
     form.append('file', resume.files[0]);
@@ -847,7 +863,8 @@ const upload = (e) => {
             resumeNonceCreateVal = data.nonce;
             alert('file uploaded successfully!')
         } else {
-            alert('file not uploaded!')
+            alert('file not uploaded!');
+            resumeIDCreateVal = '';
         }
 
     });
@@ -855,24 +872,43 @@ const upload = (e) => {
 
 ///////////////////////////////// FORM SUBMITTING REQUEST ///////////////////////////////////
 
-const clearFieldsAndCloseModal = () => {
-    // fullNameCreate = ''
-    // emailIDCreate = ''
-    // mobileNoCreate = ''
-    // overallExpIDCreateVal = ''
-    // relavantExpIDCreateVal = ''
-    // departmentIDCreateVal = ''
-    // roleIDCreateVal = ''
-    // zoneIDCreateVal = ''
-    // jobLocationIDCreateVal = ''
-    // resumeIDCreateVal = 'notUploaded'
-    // resumeNameCreateVal = ''
-    // resumeNonceCreateVal = ''
+$('#exampleModal2').on('hidden.bs.modal', function () {
+    FullNameCreateNode.value = ''
+    EmailCreateNode.value = ''
+    MobileNoCreateNode.value = ''
+    overallExpCreateNode.value = '0'
+    relaventExpCreateNode.value = '0'
+    departmentCreateNode.value = '0'
+    roleCreateNode.value = '0'
+    zoneCreateNode.value = '0'
+    branchCreateNode.value = '0'
+    attachFile.value = ''
 
-    // IsFullNameValidCreate = false,
-    // IsEmailValidCreate = false,
-    // IsMobileNoValidCreate = false,
-    // IsFileAttachedCreate = false;
+    fullNameCreate = ''
+    emailIDCreate = ''
+    mobileNoCreate = ''
+    overallExpIDCreateVal = ''
+    relavantExpIDCreateVal = ''
+    departmentIDCreateVal = ''
+    roleIDCreateVal = ''
+    zoneIDCreateVal = ''
+    jobLocationIDCreateVal = ''
+    resumeIDCreateVal = ''
+    resumeNameCreateVal = ''
+    resumeNonceCreateVal = ''
+
+    IsFullNameValidCreate = false
+    IsEmailValidCreate = false
+    IsMobileNoValidCreate = false
+
+    roleCreateNode.disabled = true
+    branchCreateNode.disabled = true
+    FullNameCreateNode.classList.remove('is-invalid');
+    EmailCreateNode.classList.remove('is-invalid');
+    MobileNoCreateNode.classList.remove('is-invalid');
+});
+
+const CloseModal = () => {
     $('#exampleModal2').modal('hide');
 }
 
@@ -905,7 +941,7 @@ function formSubmit() {
         console.log(response);
     });
     console.log(obj);
-    clearFieldsAndCloseModal();
+    CloseModal();
 }
 
 
@@ -940,11 +976,8 @@ submitBtn.addEventListener('click', (e) => {
     } else if (!jobLocationIDCreateVal) {
         $("#branchCreate").focus();
         alert('Select Branch!')
-    } else if (!IsFileAttachedCreate) {
-        $("#attachFileCreate").focus()
-        alert('Attach File!')
-    } else if (resumeIDCreateVal == 'notUploaded') {
-        alert('Upload file!')
+    } else if (!resumeIDCreateVal) {
+        alert('file not uploaded!')
     } else {
         formSubmit();
         alert('Data submitted successfully!')
@@ -982,10 +1015,11 @@ const insertDownloadByModal = (candidateID, ArrayData) => {
     $('#downloadedByModalLabel').text(candidateID)
     $('#downloadByModalBody').html('')
     if (ArrayData.length === 0) {
-        let trTemp = `<tr><td>Not Downloaded By Anyone!</td></tr>`;
-        let compliedTrTemp = Handlebars.compile(trTemp);
-        $('#downloadByModalBody').append(compliedTrTemp());
+        $('#NA').show();
+        $('#downloadedByTable').hide();
     } else {
+        $('#NA').hide();
+        $('#downloadedByTable').show();
         let trTemp = `<tr>
         <td>{{sno}}</td>
         <td>{{downloadedBy.employeeId}}</td>
@@ -1003,38 +1037,7 @@ const insertDownloadByModal = (candidateID, ArrayData) => {
     }
 }
 
-//////////////////////    Update //////////////////////////
-
-const getCandidateData = async (candidateID) => {
-    let myHeaders = new Headers();
-    myHeaders.append('Authorization', `Bearer ${accessToken}`);
-
-    let requestOptions = {
-        method: 'GET',
-        headers: myHeaders,
-        redirect: 'follow'
-    };
-
-    try {
-        const response = fetch(`https://api-hfc.techchefz.com/icicihfc-micro-service/rms/dashboard/get/by/candidate/id?candidateId=${candidateID}`, requestOptions);
-        if (response.status === 200) {
-            const data = await response
-            console.log(data);
-        } else {
-            throw new Error('Unable to fetch data!');
-        }
-    } catch (error) {
-        console.log(error.message);
-    }
-}
-
-function getUpdateForm(ref) {
-    const candidateID = ref.parentNode.parentNode.children[9].textContent;
-    console.log(candidateID);
-    getCandidateData(candidateID)
-}
-
-///////////////////     Download All  //////////////////////
+//////////////////////////     Download All  /////////////////////////////
 
 const downloadBtn = document.getElementById('downloadAllBtn')
 
@@ -1043,6 +1046,10 @@ downloadBtn.addEventListener('click', () => {
 })
 
 const downloadAllData = async (downloadType) => {
+    let now = new Date();
+    let formatedDate = dateFormat(now, "dd-mm-yyyy hh_MM_ss");
+    console.log(formatedDate);
+    
     var myHeaders = new Headers();
     myHeaders.append('Authorization', `Bearer ${accessToken}`);
     myHeaders.append('responseType', 'arrayBuffer');
@@ -1063,7 +1070,7 @@ const downloadAllData = async (downloadType) => {
             });
             const linkElem = document.createElement('a')
             linkElem.href = URL.createObjectURL(blob)
-            linkElem.download = "icici-data.xls"
+            linkElem.download = `RMS_CANDIDATE_${formatedDate}.xls`
             document.body.appendChild(linkElem)
             linkElem.click()
             document.body.removeChild(linkElem)
@@ -1074,6 +1081,469 @@ const downloadAllData = async (downloadType) => {
         console.log(error.message);
     }
 }
+
+//////////////////////////////////  Update candidate ///////////////////////////////////
+const FullNameUpdateNode = document.getElementById('fullNameUpdate');                             // input box
+const EmailUpdateNode = document.getElementById('emailUpdate');                                   // input box
+const MobileNoUpdateNode = document.getElementById('mobileNoUpdate');                             // input box
+const overallExpUpdateNode = document.getElementById('overallExpUpdate');                         // toggler
+const relaventExpUpdateNode = document.getElementById('relaventExpUpdate');                       // toggler
+const departmentUpdateNode = document.getElementById('departmentUpdate');                         // toggler
+const roleUpdateNode = document.getElementById('roleUpdate');                                     // toggler
+const zoneUpdateNode = document.getElementById('zoneUpdate');                                     // toggler
+const branchUpdateNode = document.getElementById('branchUpdate');                                 // toggler
+const updatedFile = document.getElementById('attachFileUpdate');                                   // file
+const updateBtn = document.getElementById('submitBtnUpdate');                                     // button
+
+
+
+let fullNameUpdate = '',
+    emailIDUpdate = '',
+    mobileNoUpdate = '',
+    overallExpIDUpdateVal = '',
+    relavantExpIDUpdateVal = '',
+    departmentIDUpdateVal = '',
+    roleIDUpdateVal = '',
+    zoneIDUpdateVal = '',
+    jobLocationIDUpdateVal = '',
+    resumeIDUpdateVal = '',
+    resumeNameUpdateVal = '',
+    resumeNonceUpdateVal = '';
+
+let IsFullNameValidUpdate = false,
+    IsEmailValidUpdate = false,
+    IsMobileNoValidUpdate = false;
+
+FullNameUpdateNode.addEventListener('blur', () => {
+    const regex = /[a-zA-Z]/;
+    const str = FullNameUpdateNode.value;
+    if (regex.test(str)) {
+        fullNameUpdate = str;
+        IsFullNameValidUpdate = true
+        FullNameUpdateNode.classList.remove('is-invalid')
+    } else {
+        FullNameUpdateNode.classList.add('is-invalid')
+        IsFullNameValidUpdate = false
+    }
+});
+
+FullNameUpdateNode.addEventListener('input', () => {
+    FullNameUpdateNode.classList.remove('is-invalid');
+})
+
+
+EmailUpdateNode.addEventListener('blur', () => {
+    const regex =
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const str = EmailUpdateNode.value;
+    if (regex.test(str)) {
+        emailIDUpdate = str;
+        IsEmailValidUpdate = true
+        EmailUpdateNode.classList.remove('is-invalid')
+    } else {
+        EmailUpdateNode.classList.add('is-invalid')
+        IsEmailValidUpdate = false
+    }
+});
+
+EmailUpdateNode.addEventListener('input', () => {
+    EmailUpdateNode.classList.remove('is-invalid');
+})
+
+MobileNoUpdateNode.addEventListener('blur', () => {
+    const regex = /^[6-9]\d{9}$/;
+    const str = MobileNoUpdateNode.value;
+    if (regex.test(str)) {
+        mobileNoUpdate = str;
+        IsMobileNoValidUpdate = true
+        MobileNoUpdateNode.classList.remove('is-invalid')
+    } else {
+        IsMobileNoValidCreate = false
+        MobileNoUpdateNode.classList.add('is-invalid')
+    }
+});
+
+MobileNoUpdateNode.addEventListener('input', () => {
+    MobileNoUpdateNode.classList.remove('is-invalid');
+})
+
+
+//////////////////////////// OVERALL AND RELAVENT EXPERIENCE SETUP //////////////////////////
+
+overallExpUpdateNode.addEventListener('change', (e) => {
+    let selectedValue = e.target.value;
+    if (selectedValue === '0') {
+        overallExpIDUpdateVal = '';
+    } else {
+        overallExpIDUpdateVal = selectedValue;
+    }
+});
+
+
+relaventExpUpdateNode.addEventListener('change', (e) => {
+    let selectedValue = e.target.value;
+    if (selectedValue === '0') {
+        relavantExpIDUpdateVal = '';
+    } else {
+        relavantExpIDUpdateVal = selectedValue;
+    }
+});
+
+///////////////////////////////// DEPARTMENT AND ROLE SETUP /////////////////////////////////////
+
+const clearRolesUpdate = () => {
+    roleUpdateNode.innerHTML = '<option value="0">Select</option>';
+    roleIDUpdateVal = ''
+};
+
+function setDepElUpdate() {
+    for (let i = 0; i < departmentAndRoleData.length; i++) {
+        const OptEl = document.createElement('option');
+        OptEl.textContent = departmentAndRoleData[i].name;
+        OptEl.setAttribute('value', departmentAndRoleData[i].id);
+        departmentUpdateNode.append(OptEl);
+    }
+}
+
+departmentUpdateNode.addEventListener('change', (e) => {
+    clearRolesUpdate();
+    const id = e.target.value;
+    departmentIDUpdateVal = id;
+    if (departmentIDUpdateVal != '0') {
+        setRoleElUpdate(id);
+    } else {
+        departmentIDUpdateVal = '';
+    }
+});
+
+function setRoleElUpdate(selectedDep) {
+    let rolesData;
+    for (let i = 0; i < departmentAndRoleData.length; i++) {
+        if (selectedDep === departmentAndRoleData[i].id) {
+            rolesData = departmentAndRoleData[i].roles;
+        }
+    }
+    for (let i = 0; i < rolesData.length; i++) {
+        const OptEl = document.createElement('option');
+        OptEl.textContent = rolesData[i].name;
+        OptEl.setAttribute('value', rolesData[i].id);
+        roleUpdateNode.append(OptEl);
+    }
+    roleUpdateNode.disabled = false;
+    if (rolesData.length == 1) {
+        roleUpdateNode.options[1].selected = 'selected';
+        roleIDUpdateVal = roleUpdateNode.value;
+    }
+    roleUpdateNode.addEventListener('change', (e) => {
+        let selectedValue = e.target.value;
+        if (selectedValue === '0') {
+            roleIDUpdateVal = '';
+        } else {
+            roleIDUpdateVal = selectedValue;
+        }
+    });
+}
+
+///////////////////////////// ZONES AND BRANCHES SETUP /////////////////////////////////
+
+const clearBranchesUpdate = () => {
+    branchUpdateNode.innerHTML = '<option value="0">Select</option>';
+    jobLocationIDUpdateVal = ''
+};
+
+
+function setZonesElUpdate() {
+    branchUpdateNode.disabled = true;
+    for (let i = 0; i < zoneData.length; i++) {
+        const OptEl = document.createElement('option');
+        OptEl.textContent = zoneData[i];
+        OptEl.setAttribute('value', zoneData[i]);
+        zoneUpdateNode.append(OptEl);
+    }
+}
+
+let BranchesDataUpdate;
+const loadBranchesDataUpdate = async (selectedZone) => {
+    const body = await getBranches(selectedZone);
+    BranchesDataUpdate = body.data;
+    setBranchesElUpdate();
+};
+
+function setBranchesElUpdate() {
+    for (let i = 0; i < BranchesDataUpdate.length; i++) {
+        const OptEl = document.UpdateElement('option');
+        OptEl.textContent = BranchesDataUpdate[i].branch;
+        OptEl.setAttribute('value', BranchesDataUpdate[i].id);
+        branchUpdateNode.append(OptEl);
+    }
+    branchUpdateNode.disabled = false;
+    if (BranchesDataUpdate.length == 1) {
+        branchUpdateNode.options[1].selected = 'selected';
+        jobLocationIDUpdateVal = branchUpdateNode.value;
+    }
+    branchUpdateNode.addEventListener('change', (e) => {
+        let selectedValue = e.target.value;
+        if (selectedValue === '0') {
+            jobLocationIDUpdateVal = '';
+        } else {
+            jobLocationIDUpdateVal = selectedValue
+        }
+    });
+}
+
+zoneUpdateNode.addEventListener('change', (e) => {
+    clearBranchesUpdate();
+    let selectedZone = e.target.value;
+    zoneIDUpdateVal = selectedZone;
+    if (zoneIDUpdateVal != '0') {
+        loadBranchesDataUpdate(selectedZone);
+    } else {
+        zoneIDUpdateVal = ''
+        branchUpdateNode.disabled = true;
+    }
+});
+
+
+////////////////////////////////////// FILE VALIDATION  ////////////////////////////////////
+
+let fileNameUpdate
+attachFileUpdate.addEventListener('change', function () {
+    if (!this.files[0]) {
+        console.log('File Not Attached!')
+        return;
+    }
+    const size = (this.files[0].size / 1024 / 1024).toFixed(2);
+    fileNameUpdate = $(this).val();
+    let extension = fileNameUpdate.split('.').pop();
+
+    if (extension == "pdf" || extension == "docx" || extension == "doc") {
+        let arr = fileNameUpdate.split('.');
+        if (arr.length <= 2) {
+            attachFileUpdate.classList.remove('is-invalid');
+            if (size < 5) {
+                console.log('Attached correct file!')
+                attachFileUpdate.classList.remove('is-invalid')
+                upload2();
+            } else {
+                alert("File must be less then 5 MB");
+                attachFileUpdate.classList.add('is-invalid')
+            }
+        } else {
+            alert('multi extension file not allowed!');
+            attachFileUpdate.classList.add('is-invalid')
+        }
+    } else {
+        alert('File format must be pdf or docx or doc')
+        attachFileUpdate.classList.add('is-invalid')
+    }
+});
+
+////////////////////////////////// FILE UPLOADING REQUEST ///////////////////////////////////////
+
+
+const resumeUpdate = document.getElementById('attachFileUpdate');
+const upload2 = () => {
+    // e.preventDefault()
+    const form = new FormData();
+    form.append('file', resumeUpdate.files[0]);
+
+    var settings = {
+        url: 'https://api-hfc.techchefz.com/icicihfc-micro-service/document/reference/upload/v2',
+        method: 'POST',
+        timeout: 0,
+        processData: false,
+        mimeType: 'multipart/form-data',
+        contentType: false,
+        data: form,
+    };
+
+    $.ajax(settings).done(function (response) {
+        const data = JSON.parse(response).data;
+        if (data) {
+            resumeIDUpdateVal = data.id;
+            resumeNameUpdateVal = data.name;
+            resumeNonceUpdateVal = data.nonce;
+            alert('file uploaded successfully!')
+        } else {
+            alert('file not uploaded!');
+            resumeIDUpdateVal = '';
+        }
+
+    });
+};
+
+///////////////////////////////// FORM SUBMITTING REQUEST ///////////////////////////////////
+
+
+
+function formSubmit2() {
+    const obj = {
+        fullName: fullNameUpdate,
+        emailId: emailIDUpdate,
+        mobileNumber: mobileNoUpdate,
+        experienceOverallId: overallExpIDUpdateVal,
+        experienceRelevantId: relavantExpIDUpdateVal,
+        roleId: roleIDUpdateVal,
+        jobLocationId: jobLocationIDUpdateVal,
+        resumeDocRefId: resumeIDUpdateVal,
+        resumeDocRefFileName: resumeNameUpdateVal,
+        resumeDocRefNonce: resumeNonceUpdateVal,
+    };
+    console.log(obj);
+    const settings = {
+        url: 'https://api-hfc.techchefz.com/icicihfc-micro-service/rms/candidate/submit/form',
+        method: 'POST',
+        timeout: 0,
+        headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(obj)
+    };
+
+    $.ajax(settings).done(function (response) {
+        console.log(response);
+    });
+    console.log(obj);
+}
+
+
+/////////////////////////// FORM SUBMISSION /////////////////////////////////
+
+// updateBtn.addEventListener('click', () => {
+//     e.preventDefault()
+//     if (!IsFullNameValidUpdate || !fullNameUpdate || fullNameUpdate === ' ') {
+//         $("#fullNameUpdate").focus();
+//         alert('Enter valid Full Name!')
+//     } else if (!IsEmailValidUpdate || !emailIDUpdate || emailIDUpdate === ' ') {
+//         $("#emailUpdate").focus();
+//         alert('Enter valid Email!')
+//     } else if (!IsMobileNoValidUpdate || !mobileNoUpdate || mobileNoUpdate === ' ') {
+//         $("#mobileNoUpdate").focus();
+//         alert('Enter valid Mobile Number!')
+//     } else if (!overallExpIDUpdateVal) {
+//         $("#overallExpUpdate").focus();
+//         alert('Select Overall Experience!')
+//     } else if (!relavantExpIDUpdateVal) {
+//         $("#relaventExpUpdate").focus();
+//         alert('Select Relavent Experience!')
+//     } else if (!departmentIDUpdateVal) {
+//         $("#departmentUpdate").focus();
+//         alert('Select Department!')
+//     } else if (!roleIDCreateVal) {
+//         $("#roleUpdate").focus();
+//         alert('Select Role!')
+//     } else if (!zoneIDUpdateVal) {
+//         $("#zoneUpdate").focus();
+//         alert('Select Zone!')
+//     } else if (!jobLocationIDUpdateVal) {
+//         $("#branchUpdate").focus();
+//         alert('Select Branch!')
+//     } else if (!resumeIDUpdateVal) {
+//         alert('file not uploaded!')
+//     } else {
+//         formSubmit2();
+//         alert('Data submitted successfully!')
+//         getCandidates(0, 10);
+//     }
+// });
+
+const setCandidateData = (data) => {
+    FullNameUpdateNode.value = data.fullName;
+    EmailUpdateNode.value = data.emailId;
+    MobileNoUpdateNode.value = data.mobileNumber;
+
+    let oldOverallId = data.experienceOverall.id;
+    $("#overallExpUpdate > option").each(function () {
+        if(this.value == oldOverallId){
+            overallExpUpdateNode.value = this.value;
+        }
+    });
+
+    let oldRelaventId = data.experienceRelevant.id;
+    $("#relaventExpUpdate > option").each(function () {
+        if (this.value == oldRelaventId) {
+            relaventExpUpdateNode.value = this.value;
+        }
+    });
+
+    let oldDepId = data.role.department.id;
+    $("#departmentUpdate > option").each(function () {
+        if (this.value == oldDepId) {
+            departmentUpdateNode.value = this.value;
+            setRoleElUpdate(oldDepId)
+        }
+    });
+
+
+    function setRoleElUpdate(selectedDep) {
+        let rolesData;
+        for (let i = 0; i < departmentAndRoleData.length; i++) {
+            if (selectedDep === departmentAndRoleData[i].id) {
+                rolesData = departmentAndRoleData[i].roles;
+            }
+        }
+        for (let i = 0; i < rolesData.length; i++) {
+            const OptEl = document.createElement('option');
+            OptEl.textContent = rolesData[i].name;
+            OptEl.setAttribute('value', rolesData[i].id);
+            roleUpdateNode.append(OptEl);
+        }
+        if (rolesData.length == 1) {
+            roleUpdateNode.options[1].selected = 'selected';
+            roleIDUpdateVal = roleUpdateNode.value;
+        }
+        roleUpdateNode.addEventListener('change', (e) => {
+            let selectedValue = e.target.value;
+            if (selectedValue === '0') {
+                roleIDUpdateVal = '';
+            } else {
+                roleIDUpdateVal = selectedValue;
+            }
+        });
+    }
+
+
+
+    let oldZone = data.jobLocation.zone;
+    let newZone;
+    console.log(oldZone);
+    $("#zoneUpdate > option").each(function () {
+        if (this.value == oldZone) {
+            zoneUpdateNode.value = this.value;
+        }
+    });
+
+}
+
+const getCandidateData = async (candidateID) => {
+    console.log(candidateID)
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${accessToken}`);
+
+
+    let requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+    };
+
+    let response = await fetch(`https://api-hfc.techchefz.com/icicihfc-micro-service/rms/dashboard/get/by/candidate/id?candidateId=${candidateID}`, requestOptions)
+    if (response.status === 200) {
+        const datum = await response.json()
+        console.log(datum.data);
+        setCandidateData(datum.data);
+    } else {
+        throw new Error('Unable to get candidate data!')
+    }
+}
+
+function getUpdateForm(ref) {
+    const candidateID = ref.parentNode.parentNode.children[9].textContent;
+    console.log(candidateID);
+    getCandidateData(candidateID)
+}
+
 
 
 
