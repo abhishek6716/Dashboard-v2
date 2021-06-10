@@ -401,7 +401,7 @@ filterBtn.addEventListener('click', (e) => {
 const getString = (e) => {
     queryValue = '';
     let inputStr = e.target.value;
-    if(inputStr.length > 3 || (inputStr === '')){
+    if (inputStr.length > 3 || (inputStr === '')) {
         queryFilterVal = inputStr;
         const pageSize = $('#pageSize').val();
         getCandidates(0, pageSize);
@@ -439,85 +439,59 @@ const changePageSize = () => {
     getCandidates(0, pageSize);
 };
 
-Handlebars.registerHelper("IsPresent", (remarks)=>{
-    if(remarks){
+Handlebars.registerHelper("IsPresent", (remarks) => {
+    if (remarks) {
         return remarks;
-    } else{
+    } else {
         return '- -'
     }
 });
 
-Handlebars.registerHelper('type', (candidateType, agencyId, employeeName, employeeId, employeeEmailId) => {
-    if (candidateType === 'RECRUITMENT_AGENCY'){
-        return new Handlebars.SafeString(`<button type="button" class="btn btn-secondary" rel="tooltip" data-toggle="tooltip" data-placement="left" data-html="true" title="<u>AgencyId</u> : <b>${agencyId}</b>">Details</button>`)
-    } else if (candidateType === 'EMPLOYEE'){
-        return new Handlebars.SafeString(`<button type="button" class="btn btn-secondary" rel="tooltip" data-toggle="tooltip" data-placement="left" data-html="true" title="<u>Employee Name</u> : <b>${employeeName}</b><br><u>EmployeeId</u> : <b>${employeeId}</b><br><u>Employee Email</u> : <b>${employeeEmailId}</b>">Details</button>`)
-    }else{
-        return '';
-    }
-})
-
-Handlebars.registerHelper("type11", (candidateType) => {
-    if (candidateType === 'RECRUITMENT_AGENCY'){
-        return 'AgencyId';
-    }
-})
-
-Handlebars.registerHelper("type1Val1", (candidateType, agencyId) => {
+Handlebars.registerHelper('isRA', function (candidateType, options) {
+    let fnTrue = options.fn
     if (candidateType === 'RECRUITMENT_AGENCY') {
-        if (agencyId){
-            return agencyId;
-        } else{
-            return '- -';
-        }
+        console.log(this)
+        return fnTrue(this);
     }
 })
 
-Handlebars.registerHelper("type21", (candidateType) => {
-    if (candidateType === 'EMPLOYEE') {
-        return 'Employee Name';
+Handlebars.registerHelper("type1Val1", function (agencyId){
+    if (agencyId) {
+        return agencyId;
+    } else {
+        return '- -';
     }
 })
 
-Handlebars.registerHelper("type22", (candidateType) => {
+Handlebars.registerHelper('isEM', function (candidateType, options) {
+    let fnTrue = options.fn
     if (candidateType === 'EMPLOYEE') {
-        return 'EmployeeId';
+        console.log(this)
+        return fnTrue(this);
     }
 })
 
-Handlebars.registerHelper("type23", (candidateType) => {
-    if (candidateType === 'EMPLOYEE') {
-        return 'Employee Email';
+Handlebars.registerHelper("type2Val1", function (employeeId) {
+    if (employeeId) {
+        return employeeId;
+    } else {
+        return '- -';
     }
 })
 
-Handlebars.registerHelper("type2Val1", (candidateType, employeeName) => {
-    if (candidateType === 'EMPLOYEE') {
-        if (employeeName) {
-            return employeeName;
-        } else {
-            return '- -';
-        }
+Handlebars.registerHelper("type2Val2", function (employeeName) {
+    if (employeeName) {
+        return employeeName;
+    } else {
+        return '- -';
     }
 })
 
-Handlebars.registerHelper("type2Val2", (candidateType, employeeId) => {
-    if (candidateType === 'EMPLOYEE') {
-        if (employeeId) {
-            return employeeId;
-        } else {
-            return '- -';
-        }
-    }
-})
-
-Handlebars.registerHelper("type2Val3", (candidateType, employeeEmailId) => {
-    if (candidateType === 'EMPLOYEE') {
-        if (employeeEmailId) {
-            return employeeEmailId;
-        } else {
-            return '- -';
-        }
+Handlebars.registerHelper("type2Val3", function (employeeEmailId) {
+    if (employeeEmailId) {
+        return employeeEmailId;
+    } else {
+        return '- -';
     }
 })
 
@@ -613,6 +587,10 @@ datePicker2(endDate);
 
 ////////////////////////////////  End of filter section /////////////////////
 
+const resetLabel = (e) => {
+    $('#exampleModalLabel2').text('Create');
+    $('#attachFileLabel').text('Select File');
+}
 
 const FullNameCreateNode = document.getElementById('fullNameCreate');                             // input box
 const EmailCreateNode = document.getElementById('emailCreate');                                   // input box
@@ -784,7 +762,7 @@ function setRoleElCreate(selectedDep) {
         roleCreateNode.append(OptEl);
     }
     roleCreateNode.disabled = false;
-    if(rolesData.length == 1){
+    if (rolesData.length == 1) {
         roleCreateNode.options[1].selected = 'selected';
         roleIDCreateVal = roleCreateNode.value;
     }
@@ -816,14 +794,15 @@ function setZonesElCreate() {
     }
 }
 
-let BranchesDataCreate;
+// let BranchesDataCreate;
 const loadBranchesDataCreate = async (selectedZone) => {
     const body = await getBranches(selectedZone);
     BranchesDataCreate = body.data;
-    setBranchesElCreate();
+    setBranchesElCreate(BranchesDataCreate);
 };
 
-function setBranchesElCreate() {
+function setBranchesElCreate(BranchesDataCreate) {
+    clearBranchesCreate();
     for (let i = 0; i < BranchesDataCreate.length; i++) {
         const OptEl = document.createElement('option');
         OptEl.textContent = BranchesDataCreate[i].branch;
@@ -846,7 +825,6 @@ function setBranchesElCreate() {
 }
 
 zoneCreateNode.addEventListener('change', (e) => {
-    clearBranchesCreate();
     let selectedZone = e.target.value;
     zoneIDCreateVal = selectedZone;
     if (zoneIDCreateVal != '0') {
@@ -862,9 +840,9 @@ zoneCreateNode.addEventListener('change', (e) => {
 
 let fileName
 attachFileCreate.addEventListener('change', function () {
-    if(!this.files[0]){
+    if (!this.files[0]) {
         console.log('File Not Attached!')
-        return; 
+        return;
     }
     const size = (this.files[0].size / 1024 / 1024).toFixed(2);
     fileName = $(this).val();
@@ -872,7 +850,7 @@ attachFileCreate.addEventListener('change', function () {
 
     if (extension == "pdf" || extension == "docx" || extension == "doc") {
         let arr = fileName.split('.');
-        if(arr.length <= 2){
+        if (arr.length <= 2) {
             attachFileCreate.classList.remove('is-invalid');
             if (size < 5) {
                 console.log('Attached correct file!')
@@ -885,7 +863,7 @@ attachFileCreate.addEventListener('change', function () {
                 alert("File must be less then 5 MB");
                 attachFileCreate.classList.add('is-invalid')
             }
-        } else{
+        } else {
             alert('multi extension file not allowed!');
             attachFileCreate.classList.add('is-invalid')
         }
@@ -981,8 +959,16 @@ const setCandidateData = (data) => {
 
     zoneCreateNode.value = data.jobLocation.zone;
     branchCreateNode.disabled = false;
-    loadBranchesDataCreate(data.jobLocation.zone);
-    branchCreateNode.value = data.jobLocation.id;
+
+    ///  branch ///
+    let zoneText = data.jobLocation.zone;
+    let oldBranchId = data.jobLocation.id;
+
+    const getbranch = async (zoneText, oldBranchId) => {
+        await loadBranchesDataCreate(zoneText);
+        await (branchCreateNode.value = oldBranchId);
+    }
+    getbranch(zoneText, oldBranchId);
 
     $(document).ready(function () {
         $('#attachFileLabel').text(data.resumeDocRefFileName);
@@ -1002,8 +988,8 @@ const setCandidateData = (data) => {
     resumeNonceCreateVal = '';
 
     IsFullNameValidCreate = true,
-    IsEmailValidCreate = true,
-    IsMobileNoValidCreate = true;
+        IsEmailValidCreate = true,
+        IsMobileNoValidCreate = true;
 }
 
 const CloseModal = () => {
@@ -1080,6 +1066,7 @@ submitBtn.addEventListener('click', (e) => {
     } else {
         formSubmit();
         getCandidates(0, 10);
+        getCandidates(0, 10);
     }
 });
 
@@ -1118,15 +1105,7 @@ const insertDownloadByModal = (candidateID, ArrayData) => {
     } else {
         $('#NA').hide();
         $('#downloadedByTable').show();
-        let trTemp = `<tr>
-        <td>{{sno}}</td>
-        <td>{{downloadedBy.employeeId}}</td>
-        <td>{{downloadedBy.firstName}} {{downloadedBy.lastName}}</td>
-        <td>{{downloadedBy.email}}</td>
-        <td>{{downloadedBy.mobileNumber}}</td>
-        <td>{{createdDate}}</td>
-        </tr>`;
-
+        let trTemp = $('#downloadByColumn').html();
         let compliedTrTemp = Handlebars.compile(trTemp);
         for (let i = 0; i < ArrayData.length; i++) {
             ArrayData[i].sno = i + 1;
@@ -1147,7 +1126,7 @@ const downloadAllData = async (downloadType) => {
     let now = new Date();
     let formatedDate = dateFormat(now, "dd-mm-yyyy hh_MM_ss");
     console.log(formatedDate);
-    
+
     var myHeaders = new Headers();
     myHeaders.append('Authorization', `Bearer ${accessToken}`);
     myHeaders.append('responseType', 'arrayBuffer');
@@ -1183,7 +1162,6 @@ const downloadAllData = async (downloadType) => {
 //////////////////////////////////  Update candidate ///////////////////////////////////
 
 const getCandidateData = async (candidateID) => {
-    console.log(candidateID)
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${accessToken}`);
 
@@ -1205,6 +1183,7 @@ const getCandidateData = async (candidateID) => {
 }
 
 function getUpdateForm(ref) {
+    $('#exampleModalLabel2').text('Update')
     const candidateID = ref.parentNode.parentNode.children[9].textContent;
     console.log(candidateID);
     getCandidateData(candidateID)
@@ -1220,51 +1199,56 @@ let statusChangeVal = '',
     statusChangeTextVal = '',
     candidateID = '';
 
-function getStatus(ref){
+let reference;
+function getStatus(ref) {
+    reference = ref;
     candidateID = ref.parentNode.parentNode.children[9].textContent;
     console.log(candidateID);
     $('#statusModalLabel').text(candidateID)
+}
 
-    statusChangeToggler.addEventListener('change', (e) => {
-        let selectedValue = e.target.value;
-        if (selectedValue === '0') {
-            statusChangeVal = '';
-        } else if (selectedValue === '1') {
-            statusChangeVal = 'CREATED'
-        } else if (selectedValue === '2') {
-            statusChangeVal = 'SHORT_LISTED'
-        } else if (selectedValue === '3') {
-            statusChangeVal = 'HOLD'
-        } else if (selectedValue === '4') {
-            statusChangeVal = 'REJECTED'
-        } else {
-            statusChangeVal = 'ALL'
-        }
-    })
+const getStatusValue = (e) => {
+    let selectedValue = e.target.value;
+    if (selectedValue === '0') {
+        statusChangeVal = '';
+    } else if (selectedValue === '1') {
+        statusChangeVal = 'CREATED'
+    } else if (selectedValue === '2') {
+        statusChangeVal = 'SHORT_LISTED'
+    } else if (selectedValue === '3') {
+        statusChangeVal = 'HOLD'
+    } else if (selectedValue === '4') {
+        statusChangeVal = 'REJECTED'
+    } else {
+        statusChangeVal = 'ALL'
+    }
+}
 
-    statusChangeTextBox.addEventListener('change', (e) => {
-        const str = statusChangeTextBox.value;
-        statusChangeTextVal = str;
-    })
 
-    console.log(statusChangeVal, statusChangeTextVal)
-    statusBtn.addEventListener('click', () => {
-        if (!candidateID) {
-            $('#candidateStatus').focus();
-        } else if (!statusChangeVal) {
-            $('#candidateStatus').focus();
-            alert('status not selected');
-        } else if (!statusChangeTextVal) {
-            $('#statusRemarks').focus();
-            alert('remarks not added!');
-        } else {
-            submitStatus();
-            getCandidates(0, 10);
-        }
-    })
+const getTextValue = (e) => {
+    const str = statusChangeTextBox.value;
+    statusChangeTextVal = str;
+}
+
+function submitNewStatus() {
+    if (!candidateID) {
+        $('#candidateStatus').focus();
+    } else if (!statusChangeVal) {
+        $('#candidateStatus').focus();
+        alert('status not selected');
+    } else if (!statusChangeTextVal) {
+        $('#statusRemarks').focus();
+        alert('remarks not added!');
+    } else {
+        submitStatus();
+        getCandidates(0, 10);
+        getCandidates(0, 10);
+    }
 }
 
 const CloseStatusModal = () => {
+    statusChangeToggler.value = '0';
+    statusChangeTextBox.value = '';
     $('#statusModel').modal('hide');
 }
 

@@ -35,6 +35,11 @@
 
     <!-- Include Handlebars from a CDN -->
     <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <!-- <script type="text/javascript">
+        $(window).on('load', function () {
+            $('#exampleModal2').modal('show');
+        });
+    </script> -->
 </head>
 
 <body>
@@ -59,10 +64,12 @@
     <!-- controllers -->
     <div style="display: flex; justify-content: space-evenly; margin-top: 25px; margin-bottom: 25px;">
         <div style="display: inline;">
-            <button id="showFilterBtn" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal1">ShowFilters</button>
+            <button id="showFilterBtn" class="btn btn-primary" data-toggle="modal"
+                data-target="#exampleModal1">ShowFilters</button>
             <button id="resetFilterBtn" class="btn btn-danger" onclick="resetFilters()">Reset Filters</button>
-            <button id="createNewBtn" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">CreateNew</button>
-            <button id="downloadAllBtn" class="btn btn-primary" >Download</button>
+            <button id="createNewBtn" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal2"
+                onclick="resetLabel(event)">CreateNew</button>
+            <button id="downloadAllBtn" class="btn btn-primary">Download</button>
         </div>
         <div style="display: inline;">
             <input id="search" type="text" placeholder="Type Here" oninput="getString(event)">
@@ -221,7 +228,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel2">Create New</h5>
+                    <h5 class="modal-title" id="exampleModalLabel2"></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -239,8 +246,8 @@
                             </div>
                             <div class="col">
                                 <label for="emailCreate">Email:</label>
-                                <input type="email" class="form-control" id="emailCreate" placeholder="Enter Email" oninput=""
-                                    maxlength="50">
+                                <input type="email" class="form-control" id="emailCreate" placeholder="Enter Email"
+                                    oninput="" maxlength="50">
                                 <small id="namevalid" class="form-text text-muted invalid-feedback">
                                     Enter valid Email!
                                 </small>
@@ -249,7 +256,8 @@
                         <div class="form-row">
                             <div class="col">
                                 <label for="mobileNoCreate">Mobile No:</label>
-                                <input type="number" class="form-control" id="mobileNoCreate" placeholder="Enter Mobile No"
+                                <input type="number" class="form-control" id="mobileNoCreate"
+                                    placeholder="Enter Mobile No"
                                     oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
                                     maxlength="10">
                                 <small id="namevalid" class="form-text text-muted invalid-feedback">
@@ -378,11 +386,19 @@
                     data-html="true" title="<u>Remarks</u> : <b>{{IsPresent remarks}}</b>">Details</button>
             </td>
             <td><a href="{{resumeDocRefLink}}" target="_blank">Download</a></td>
-            <td><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal2"
-                    onclick="getUpdateForm(this)">Update</button></td>
-            <td><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#downloadedByModal"
-                    onclick="getDownloadedByColumn(this)">Check</button></td>
-            <td id="uploadedByCell">{{type candidateType agencyId employeeName employeeId employeeEmailId}}</td>
+            <td>
+                <button type="button" class="btn btn-secondary" data-toggle="modal" onclick="getUpdateForm(this)" data-target="#exampleModal2">Update</button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#downloadedByModal" onclick="getDownloadedByColumn(this)">Check</button>
+            </td>
+            <td>{{#isRA this.candidateType}}
+                     <button type="button" class="btn btn-secondary" rel="tooltip" data-toggle="tooltip" data-placement="left" data-html="true" title="<u>Agency Id</u> : <b>{{type1Val1 agencyId}}</b>">Details</button>
+                {{/isRA}}
+                {{#isEM this.candidateType}}
+                     <button type="button" class="btn btn-secondary" rel="tooltip" data-toggle="tooltip" data-placement="left" data-html="true" title="<u>Employee Id</u> : <b>{{type2Val1 employeeId}}</b><br><u>Employee Name</u> : <b>{{type2Val2 employeeName}}</b><br><u>Employee Email Id</u> : <b>{{type2Val3 employeeEmailId}}</b>">Details</button>
+                {{/isEM}}
+            </td>
         </tr>
     </script>
 
@@ -405,7 +421,8 @@
 
 
     <!-- download by model -->
-    <div class="modal fade" id="downloadedByModal" tabindex="-1" aria-labelledby="downloadedByModalLabel" aria-hidden="true">
+    <div class="modal fade" id="downloadedByModal" tabindex="-1" aria-labelledby="downloadedByModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -416,7 +433,8 @@
                 </div>
                 <div class="modal-body" style="overflow-x: scroll;">
                     <div class="container-fluid" id="tableContainer">
-                        <div id="NA" style="display: flex; justify-content: center;"><em>Not Downloaded by anyone!</em></div>
+                        <div id="NA" style="display: flex; justify-content: center;"><em>Not Downloaded by anyone!</em>
+                        </div>
                         <table id="downloadedByTable" class="table table-sm table-bordered table-striped table-fixed">
                             <thead id="tableHeader">
                                 <tr>
@@ -437,9 +455,19 @@
         </div>
     </div>
 
+    <script id="downloadByColumn" type="text/x-handlebars-template">
+        <tr>
+            <td>{{sno}}</td>
+            <td>{{downloadedBy.employeeId}}</td>
+            <td>{{downloadedBy.firstName}} {{downloadedBy.lastName}}</td>
+            <td>{{downloadedBy.email}}</td>
+            <td>{{downloadedBy.mobileNumber}}</td>
+            <td>{{createdDate}}</td>
+        </tr>
+    </script>
+
     <!-- status change model -->
-    <div class="modal fade" id="statusModel" tabindex="-1" aria-labelledby="statusModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="statusModel" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -452,7 +480,7 @@
                     <div class="container-fluid" id="statusContainer">
                         <div class="col form-group">
                             <label for="candidateStatus">Candidate Status:</label>
-                            <select id="candidateStatus" class="form-control">
+                            <select id="candidateStatus" class="form-control" onchange="getStatusValue(event)">
                                 <option value="0" default>Select Type</option>
                                 <option value="1">CREATED</option>
                                 <option value="2">SHORT LISTED</option>
@@ -463,19 +491,21 @@
                         </div>
                         <div class="col form-group">
                             <label for="statusRemarks">Remarks</label>
-                            <textarea class="form-control" id="statusRemarks" spellcheck="false"></textarea>
+                            <textarea class="form-control" id="statusRemarks" spellcheck="false"
+                                onchange="getTextValue(event)"></textarea>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success" id="changeStatusBtn">Change Status</button>
+                    <button type="button" class="btn btn-success" id="changeStatusBtn"
+                        onclick="submitNewStatus()">Change Status</button>
                 </div>
             </div>
         </div>
     </div>
 
 
-    
+
 
 
     <script src="../scripts/bootstrap-datepicker.min.js"></script>
