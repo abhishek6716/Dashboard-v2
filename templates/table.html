@@ -304,7 +304,7 @@
                             </div>
                             <div class="col">
                                 <div class="form-group">
-                                    <label for="attachFileCreate">Attach File:</label>
+                                    <label id="attachFileLabel" for="attachFileCreate">Attach File:</label>
                                     <input id="attachFileCreate" type="file" class="form-control-file">
                                     <!-- <button id="uploadBtnCreate" type="button" class="btn btn-outline-primary" onclick="upload()"
                                         disabled>Upload</button> -->
@@ -343,12 +343,50 @@
                     <th scope="col">Download</th>
                     <th scope="col">Update</th>
                     <th scope="col">Downloaded By</th>
+                    <th scope="col">Uploaded By</th>
                 </tr>
             </thead>
             <tbody id="mainDataTable">
             </tbody>
         </table>
     </div>
+
+
+    <script id="dataRow" type="text/x-handlebars-template">
+        <tr>
+            <td>{{sno}}</td>
+            <td>{{fullName}}</td>
+            <td>{{role.name}}</td>
+            <td>{{role.department.name}}</td>
+            <td>{{jobLocation.branch}}</td>
+            <td>{{createdDate}}</td>
+            <td><button type="button" rel="tooltip" class="btn btn-secondary" data-toggle="tooltip" data-placement="left"
+                    data-html="true"
+                    title="{{#if lastStatusChangeDate}}<u>Last Status Changed Date</u> : <b>{{lastStatusChangeDate}}</b>{{else}}<u>Last Status Changed Date</u> : <b>- -</b>{{/if}}<br><u>Last Upload Date</u> : <b>{{lastUploadDate}}</b><br><u>Updated Date</u> : <b>{{updatedDate}}</b>">
+                    Details
+                </button>
+            </td>
+            <td><button type="button" rel="tooltip" class="btn btn-secondary" data-toggle="tooltip" data-placement="left"
+                    data-html="true"
+                    title="{{#if lastUpdatedBy}}<u>Last Updated By</u> : <b>{{lastUpdatedBy.firstName}} {{lastUpdatedBy.lastName}}</b>{{else}}<u>Last Updated By</u> : <b>- -</b>{{/if}}">
+                    Details
+                </button>
+            </td>
+            <td>{{candidateStatus}} <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#statusModel" onclick="getStatus(this)">Click</button></td>
+            <td>{{candidateId}}</td>
+            <td><button type="button" rel="tooltip" class="btn btn-secondary" data-toggle="tooltip" data-placement="left"
+                    data-html="true" title="<u>Remarks</u> : <b>{{IsPresent remarks}}</b>">Details</button>
+            </td>
+            <td><a href="{{resumeDocRefLink}}" target="_blank">Download</a></td>
+            <td><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModal2"
+                    onclick="getUpdateForm(this)">Update</button></td>
+            <td><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#downloadedByModal"
+                    onclick="getDownloadedByColumn(this)">Check</button></td>
+            <td id="uploadedByCell">{{type candidateType agencyId employeeName employeeId employeeEmailId}}</td>
+        </tr>
+    </script>
+
+
 
     <!-- footer -->
     <div style="display: flex; justify-content: space-evenly;">
@@ -362,111 +400,6 @@
         </div>
         <div style="display: inline;">
             <div id="pagination" class="paginationjs-theme-blue"></div>
-        </div>
-    </div>
-
-
-    <!-- update model -->
-    <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="updateModalLabel">Update</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        <div class="form-row">
-                            <div class="col form-group">
-                                <label for="fullName">Full Name:</label>
-                                <input type="text" id="fullNameUpdate" class="form-control"  placeholder="Enter Name"
-                                    maxlength="50" oninput="" onkeypress="return /[a-z]| /i.test(event.key)">
-                                <small id="namevalid" class="form-text text-muted invalid-feedback">
-                                    Enter valid Full Name!
-                                </small>
-                            </div>
-                            <div class="col">
-                                <label for="email">Email:</label>
-                                <input type="email" id="emailUpdate" class="form-control"  placeholder="Enter Email" oninput="" maxlength="50">
-                                <small id="namevalid" class="form-text text-muted invalid-feedback">
-                                    Enter valid Email!
-                                </small>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col">
-                                <label for="mobileNo">Mobile No:</label>
-                                <input type="number" id="mobileNoUpdate" class="form-control"  placeholder="Enter Mobile No"
-                                    oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);"
-                                    maxlength="10">
-                                <small id="namevalid" class="form-text text-muted invalid-feedback">
-                                    Enter valid Mobile Number!
-                                </small>
-                            </div>
-                            <div class="col">
-                                <label for="overallExperience">Overall Experience:</label>
-                                <select class="form-control" id="overallExpUpdate">
-                                    <option value="0">Select</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col">
-                                <label for="relaventExperience">Relavent Experience:</label>
-                                <select class="form-control" id="relaventExpUpdate" >
-                                    <option value="0">Select</option>
-                                </select>
-                            </div>
-                            <div class="col">
-                                <label for="department">Department:</label>
-                                <select class="form-control" id="departmentUpdate" >
-                                    <option value="0">Select</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col form-group">
-                                <label for="role">Role:</label>
-                                <select class="form-control" id="roleUpdate">
-                                    <option value="0">Select</option>
-                                </select>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="zone">Zone:</label>
-                                    <select class="form-control" id="zoneUpdate" >
-                                        <option value="0">Select</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="branch">Branch:</label>
-                                    <select class="form-control" id="branchUpdate">
-                                        <option value="0">Select</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label for="attachFile">Attach File:</label>
-                                    <input  type="file" class="form-control-file" id="attachFileUpdate">
-                                    <small id="namevalid" class="form-text text-muted invalid-feedback">
-                                        Selected file must be less then 5MB size and of pdf or doc or docx format!
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="updateBtn" class="btn btn-success" >Update</button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -499,6 +432,43 @@
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- status change model -->
+    <div class="modal fade" id="statusModel" tabindex="-1" aria-labelledby="statusModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="statusModalLabel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid" id="statusContainer">
+                        <div class="col form-group">
+                            <label for="candidateStatus">Candidate Status:</label>
+                            <select id="candidateStatus" class="form-control">
+                                <option value="0" default>Select Type</option>
+                                <option value="1">CREATED</option>
+                                <option value="2">SHORT LISTED</option>
+                                <option value="3">HOLD</option>
+                                <option value="4">REJECTED</option>
+                                <option value="5">ALL</option>
+                            </select>
+                        </div>
+                        <div class="col form-group">
+                            <label for="statusRemarks">Remarks</label>
+                            <textarea class="form-control" id="statusRemarks" spellcheck="false"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="changeStatusBtn">Change Status</button>
                 </div>
             </div>
         </div>

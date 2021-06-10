@@ -97,7 +97,7 @@ const loadDepAndRoleData = async () => {
     departmentAndRoleData = body.data;
     setDepElFilter();
     setDepElCreate();
-    setDepElUpdate();
+    // setDepElUpdate();
 };
 loadDepAndRoleData();
 
@@ -108,7 +108,7 @@ const loadZonesData = async () => {
     zoneData = body.data;
     setZonesElFilter();
     setZonesElCreate();
-    setZonesElUpdate();
+    // setZonesElUpdate();
 };
 loadZonesData();
 
@@ -439,37 +439,93 @@ const changePageSize = () => {
     getCandidates(0, pageSize);
 };
 
+Handlebars.registerHelper("IsPresent", (remarks)=>{
+    if(remarks){
+        return remarks;
+    } else{
+        return '- -'
+    }
+});
+
+Handlebars.registerHelper('type', (candidateType, agencyId, employeeName, employeeId, employeeEmailId) => {
+    if (candidateType === 'RECRUITMENT_AGENCY'){
+        return new Handlebars.SafeString(`<button type="button" class="btn btn-secondary" rel="tooltip" data-toggle="tooltip" data-placement="left" data-html="true" title="<u>AgencyId</u> : <b>${agencyId}</b>">Details</button>`)
+    } else if (candidateType === 'EMPLOYEE'){
+        return new Handlebars.SafeString(`<button type="button" class="btn btn-secondary" rel="tooltip" data-toggle="tooltip" data-placement="left" data-html="true" title="<u>Employee Name</u> : <b>${employeeName}</b><br><u>EmployeeId</u> : <b>${employeeId}</b><br><u>Employee Email</u> : <b>${employeeEmailId}</b>">Details</button>`)
+    }else{
+        return '';
+    }
+})
+
+Handlebars.registerHelper("type11", (candidateType) => {
+    if (candidateType === 'RECRUITMENT_AGENCY'){
+        return 'AgencyId';
+    }
+})
+
+Handlebars.registerHelper("type1Val1", (candidateType, agencyId) => {
+    if (candidateType === 'RECRUITMENT_AGENCY') {
+        if (agencyId){
+            return agencyId;
+        } else{
+            return '- -';
+        }
+    }
+})
+
+Handlebars.registerHelper("type21", (candidateType) => {
+    if (candidateType === 'EMPLOYEE') {
+        return 'Employee Name';
+    }
+})
+
+Handlebars.registerHelper("type22", (candidateType) => {
+    if (candidateType === 'EMPLOYEE') {
+        return 'EmployeeId';
+    }
+})
+
+Handlebars.registerHelper("type23", (candidateType) => {
+    if (candidateType === 'EMPLOYEE') {
+        return 'Employee Email';
+    }
+})
+
+Handlebars.registerHelper("type2Val1", (candidateType, employeeName) => {
+    if (candidateType === 'EMPLOYEE') {
+        if (employeeName) {
+            return employeeName;
+        } else {
+            return '- -';
+        }
+    }
+})
+
+Handlebars.registerHelper("type2Val2", (candidateType, employeeId) => {
+    if (candidateType === 'EMPLOYEE') {
+        if (employeeId) {
+            return employeeId;
+        } else {
+            return '- -';
+        }
+    }
+})
+
+Handlebars.registerHelper("type2Val3", (candidateType, employeeEmailId) => {
+    if (candidateType === 'EMPLOYEE') {
+        if (employeeEmailId) {
+            return employeeEmailId;
+        } else {
+            return '- -';
+        }
+    }
+})
 
 const insertTable = (candidatesData, pageNo, pageSize) => {
     $('#mainDataTable').html('');
-    let row = `<tr>
-            <td>{{sno}}</td>
-            <td>{{fullName}}</td>
-            <td>{{role.name}}</td>
-            <td>{{role.department.name}}</td>
-            <td>{{jobLocation.branch}}</td>
-            <td>{{createdDate}}</td>
-            <td><button type="button" rel="tooltip" class="btn btn-secondary" data-toggle="tooltip" data-placement="left" data-html="true" title="{{#if lastStatusChangeDate}}<u>Last Status Changed Date</u> : <b>{{lastStatusChangeDate}}</b>{{else}}<u>Last Status Changed Date</u> : <b>- -</b>{{/if}}<br><u>Last Upload Date</u> : <b>{{lastUploadDate}}</b><br><u>Updated Date</u> : <b>{{updatedDate}}</b>">
-            Details
-            </button>
-            </td>
-            <td><button type="button" rel="tooltip" class="btn btn-secondary" data-toggle="tooltip" data-placement="left" data-html="true" title="{{#if lastUpdatedBy}}<u>Last Updated By</u> : <b>{{lastUpdatedBy.firstName}} {{lastUpdatedBy.lastName}}</b>{{else}}<u>Last Updated By</u> : <b>- -</b>{{/if}}">
-            Details
-            </button>
-            </td>
-            <td>{{candidateStatus}}</td>
-            <td>{{candidateId}}</td>
-            <td><button type="button" rel="tooltip" class="btn btn-secondary" data-toggle="tooltip" data-placement="left" data-html="true" title="{{#if remarks}}<u>Remarks</u> : <b>{{remarks}}</b>{{else}}<u>Remarks</u> : <b>- -</b>{{/if}}">
-            Details
-            </button>
-            </td>
-            <td><a href="{{resumeDocRefLink}}" target="_blank">Download</a></td>
-            <td><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#updateModal" onclick="getUpdateForm(this)">Update</button></td>
-            <td><button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#downloadedByModal" onclick="getDownloadedByColumn(this)">Check</button></td>
-         </tr>`;
-
-    let template = Handlebars.compile(row);
-    template(template);
+    let rowTemplate = $('#dataRow').html()
+    let template = Handlebars.compile(rowTemplate);
+    console.log(candidatesData);
     for (let i = 0; i < candidatesData.length; i++) {
         candidatesData[i].sno = (pageNo - 1) * pageSize + (i + 1);
         $('#mainDataTable').append(template(candidatesData[i]));
@@ -652,7 +708,7 @@ function setOverallElCreate() {
         OptEl.textContent = overallExpData[i].value;
         OptEl.setAttribute('value', overallExpData[i].id);
         overallExpCreateNode.append(OptEl);
-        $('#overallExpUpdate').append(OptEl);
+        $('#overallExpCreate').append(OptEl);
     }
 }
 
@@ -662,7 +718,7 @@ function setRelevantElCreate() {
         OptEl.textContent = relevantExpData[i].value;
         OptEl.setAttribute('value', relevantExpData[i].id);
         relaventExpCreateNode.append(OptEl);
-        $('#relaventExpUpdate').append(OptEl);
+        $('#relaventExpCreate').append(OptEl);
     }
 }
 
@@ -821,6 +877,9 @@ attachFileCreate.addEventListener('change', function () {
             if (size < 5) {
                 console.log('Attached correct file!')
                 attachFileCreate.classList.remove('is-invalid')
+                $(document).ready(function () {
+                    $('#attachFileLabel').text('Select File');
+                });
                 upload();
             } else {
                 alert("File must be less then 5 MB");
@@ -908,6 +967,45 @@ $('#exampleModal2').on('hidden.bs.modal', function () {
     MobileNoCreateNode.classList.remove('is-invalid');
 });
 
+const setCandidateData = (data) => {
+    FullNameCreateNode.value = data.fullName;
+    EmailCreateNode.value = data.emailId;
+    MobileNoCreateNode.value = data.mobileNumber;
+    overallExpCreateNode.value = data.experienceOverall.id;
+    relaventExpCreateNode.value = data.experienceRelevant.id;
+
+    departmentCreateNode.value = data.role.department.id;
+    roleCreateNode.disabled = false;
+    setRoleElCreate(data.role.department.id)
+    roleCreateNode.value = data.role.id;
+
+    zoneCreateNode.value = data.jobLocation.zone;
+    branchCreateNode.disabled = false;
+    loadBranchesDataCreate(data.jobLocation.zone);
+    branchCreateNode.value = data.jobLocation.id;
+
+    $(document).ready(function () {
+        $('#attachFileLabel').text(data.resumeDocRefFileName);
+    });
+
+    fullNameCreate = data.fullName;
+    emailIDCreate = data.emailId;
+    mobileNoCreate = data.mobileNumber;
+    overallExpIDCreateVal = data.experienceOverall.id;
+    relavantExpIDCreateVal = data.experienceRelevant.id;
+    departmentIDCreateVal = data.role.department.id;
+    roleIDCreateVal = data.role.id;
+    zoneIDCreateVal = data.jobLocation.zone;
+    jobLocationIDCreateVal = data.jobLocation.id;;
+    resumeIDCreateVal = data.resumeDocRefId;
+    resumeNameCreateVal = data.resumeDocRefFileName;
+    resumeNonceCreateVal = '';
+
+    IsFullNameValidCreate = true,
+    IsEmailValidCreate = true,
+    IsMobileNoValidCreate = true;
+}
+
 const CloseModal = () => {
     $('#exampleModal2').modal('hide');
 }
@@ -939,6 +1037,7 @@ function formSubmit() {
 
     $.ajax(settings).done(function (response) {
         console.log(response);
+        alert(response.message);
     });
     console.log(obj);
     CloseModal();
@@ -980,7 +1079,6 @@ submitBtn.addEventListener('click', (e) => {
         alert('file not uploaded!')
     } else {
         formSubmit();
-        alert('Data submitted successfully!')
         getCandidates(0, 10);
     }
 });
@@ -1083,438 +1181,6 @@ const downloadAllData = async (downloadType) => {
 }
 
 //////////////////////////////////  Update candidate ///////////////////////////////////
-const FullNameUpdateNode = document.getElementById('fullNameUpdate');                             // input box
-const EmailUpdateNode = document.getElementById('emailUpdate');                                   // input box
-const MobileNoUpdateNode = document.getElementById('mobileNoUpdate');                             // input box
-const overallExpUpdateNode = document.getElementById('overallExpUpdate');                         // toggler
-const relaventExpUpdateNode = document.getElementById('relaventExpUpdate');                       // toggler
-const departmentUpdateNode = document.getElementById('departmentUpdate');                         // toggler
-const roleUpdateNode = document.getElementById('roleUpdate');                                     // toggler
-const zoneUpdateNode = document.getElementById('zoneUpdate');                                     // toggler
-const branchUpdateNode = document.getElementById('branchUpdate');                                 // toggler
-const updatedFile = document.getElementById('attachFileUpdate');                                   // file
-const updateBtn = document.getElementById('submitBtnUpdate');                                     // button
-
-
-
-let fullNameUpdate = '',
-    emailIDUpdate = '',
-    mobileNoUpdate = '',
-    overallExpIDUpdateVal = '',
-    relavantExpIDUpdateVal = '',
-    departmentIDUpdateVal = '',
-    roleIDUpdateVal = '',
-    zoneIDUpdateVal = '',
-    jobLocationIDUpdateVal = '',
-    resumeIDUpdateVal = '',
-    resumeNameUpdateVal = '',
-    resumeNonceUpdateVal = '';
-
-let IsFullNameValidUpdate = false,
-    IsEmailValidUpdate = false,
-    IsMobileNoValidUpdate = false;
-
-FullNameUpdateNode.addEventListener('blur', () => {
-    const regex = /[a-zA-Z]/;
-    const str = FullNameUpdateNode.value;
-    if (regex.test(str)) {
-        fullNameUpdate = str;
-        IsFullNameValidUpdate = true
-        FullNameUpdateNode.classList.remove('is-invalid')
-    } else {
-        FullNameUpdateNode.classList.add('is-invalid')
-        IsFullNameValidUpdate = false
-    }
-});
-
-FullNameUpdateNode.addEventListener('input', () => {
-    FullNameUpdateNode.classList.remove('is-invalid');
-})
-
-
-EmailUpdateNode.addEventListener('blur', () => {
-    const regex =
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    const str = EmailUpdateNode.value;
-    if (regex.test(str)) {
-        emailIDUpdate = str;
-        IsEmailValidUpdate = true
-        EmailUpdateNode.classList.remove('is-invalid')
-    } else {
-        EmailUpdateNode.classList.add('is-invalid')
-        IsEmailValidUpdate = false
-    }
-});
-
-EmailUpdateNode.addEventListener('input', () => {
-    EmailUpdateNode.classList.remove('is-invalid');
-})
-
-MobileNoUpdateNode.addEventListener('blur', () => {
-    const regex = /^[6-9]\d{9}$/;
-    const str = MobileNoUpdateNode.value;
-    if (regex.test(str)) {
-        mobileNoUpdate = str;
-        IsMobileNoValidUpdate = true
-        MobileNoUpdateNode.classList.remove('is-invalid')
-    } else {
-        IsMobileNoValidCreate = false
-        MobileNoUpdateNode.classList.add('is-invalid')
-    }
-});
-
-MobileNoUpdateNode.addEventListener('input', () => {
-    MobileNoUpdateNode.classList.remove('is-invalid');
-})
-
-
-//////////////////////////// OVERALL AND RELAVENT EXPERIENCE SETUP //////////////////////////
-
-overallExpUpdateNode.addEventListener('change', (e) => {
-    let selectedValue = e.target.value;
-    if (selectedValue === '0') {
-        overallExpIDUpdateVal = '';
-    } else {
-        overallExpIDUpdateVal = selectedValue;
-    }
-});
-
-
-relaventExpUpdateNode.addEventListener('change', (e) => {
-    let selectedValue = e.target.value;
-    if (selectedValue === '0') {
-        relavantExpIDUpdateVal = '';
-    } else {
-        relavantExpIDUpdateVal = selectedValue;
-    }
-});
-
-///////////////////////////////// DEPARTMENT AND ROLE SETUP /////////////////////////////////////
-
-const clearRolesUpdate = () => {
-    roleUpdateNode.innerHTML = '<option value="0">Select</option>';
-    roleIDUpdateVal = ''
-};
-
-function setDepElUpdate() {
-    for (let i = 0; i < departmentAndRoleData.length; i++) {
-        const OptEl = document.createElement('option');
-        OptEl.textContent = departmentAndRoleData[i].name;
-        OptEl.setAttribute('value', departmentAndRoleData[i].id);
-        departmentUpdateNode.append(OptEl);
-    }
-}
-
-departmentUpdateNode.addEventListener('change', (e) => {
-    clearRolesUpdate();
-    const id = e.target.value;
-    departmentIDUpdateVal = id;
-    if (departmentIDUpdateVal != '0') {
-        setRoleElUpdate(id);
-    } else {
-        departmentIDUpdateVal = '';
-    }
-});
-
-function setRoleElUpdate(selectedDep) {
-    let rolesData;
-    for (let i = 0; i < departmentAndRoleData.length; i++) {
-        if (selectedDep === departmentAndRoleData[i].id) {
-            rolesData = departmentAndRoleData[i].roles;
-        }
-    }
-    for (let i = 0; i < rolesData.length; i++) {
-        const OptEl = document.createElement('option');
-        OptEl.textContent = rolesData[i].name;
-        OptEl.setAttribute('value', rolesData[i].id);
-        roleUpdateNode.append(OptEl);
-    }
-    roleUpdateNode.disabled = false;
-    if (rolesData.length == 1) {
-        roleUpdateNode.options[1].selected = 'selected';
-        roleIDUpdateVal = roleUpdateNode.value;
-    }
-    roleUpdateNode.addEventListener('change', (e) => {
-        let selectedValue = e.target.value;
-        if (selectedValue === '0') {
-            roleIDUpdateVal = '';
-        } else {
-            roleIDUpdateVal = selectedValue;
-        }
-    });
-}
-
-///////////////////////////// ZONES AND BRANCHES SETUP /////////////////////////////////
-
-const clearBranchesUpdate = () => {
-    branchUpdateNode.innerHTML = '<option value="0">Select</option>';
-    jobLocationIDUpdateVal = ''
-};
-
-
-function setZonesElUpdate() {
-    branchUpdateNode.disabled = true;
-    for (let i = 0; i < zoneData.length; i++) {
-        const OptEl = document.createElement('option');
-        OptEl.textContent = zoneData[i];
-        OptEl.setAttribute('value', zoneData[i]);
-        zoneUpdateNode.append(OptEl);
-    }
-}
-
-let BranchesDataUpdate;
-const loadBranchesDataUpdate = async (selectedZone) => {
-    const body = await getBranches(selectedZone);
-    BranchesDataUpdate = body.data;
-    setBranchesElUpdate();
-};
-
-function setBranchesElUpdate() {
-    for (let i = 0; i < BranchesDataUpdate.length; i++) {
-        const OptEl = document.UpdateElement('option');
-        OptEl.textContent = BranchesDataUpdate[i].branch;
-        OptEl.setAttribute('value', BranchesDataUpdate[i].id);
-        branchUpdateNode.append(OptEl);
-    }
-    branchUpdateNode.disabled = false;
-    if (BranchesDataUpdate.length == 1) {
-        branchUpdateNode.options[1].selected = 'selected';
-        jobLocationIDUpdateVal = branchUpdateNode.value;
-    }
-    branchUpdateNode.addEventListener('change', (e) => {
-        let selectedValue = e.target.value;
-        if (selectedValue === '0') {
-            jobLocationIDUpdateVal = '';
-        } else {
-            jobLocationIDUpdateVal = selectedValue
-        }
-    });
-}
-
-zoneUpdateNode.addEventListener('change', (e) => {
-    clearBranchesUpdate();
-    let selectedZone = e.target.value;
-    zoneIDUpdateVal = selectedZone;
-    if (zoneIDUpdateVal != '0') {
-        loadBranchesDataUpdate(selectedZone);
-    } else {
-        zoneIDUpdateVal = ''
-        branchUpdateNode.disabled = true;
-    }
-});
-
-
-////////////////////////////////////// FILE VALIDATION  ////////////////////////////////////
-
-let fileNameUpdate
-attachFileUpdate.addEventListener('change', function () {
-    if (!this.files[0]) {
-        console.log('File Not Attached!')
-        return;
-    }
-    const size = (this.files[0].size / 1024 / 1024).toFixed(2);
-    fileNameUpdate = $(this).val();
-    let extension = fileNameUpdate.split('.').pop();
-
-    if (extension == "pdf" || extension == "docx" || extension == "doc") {
-        let arr = fileNameUpdate.split('.');
-        if (arr.length <= 2) {
-            attachFileUpdate.classList.remove('is-invalid');
-            if (size < 5) {
-                console.log('Attached correct file!')
-                attachFileUpdate.classList.remove('is-invalid')
-                upload2();
-            } else {
-                alert("File must be less then 5 MB");
-                attachFileUpdate.classList.add('is-invalid')
-            }
-        } else {
-            alert('multi extension file not allowed!');
-            attachFileUpdate.classList.add('is-invalid')
-        }
-    } else {
-        alert('File format must be pdf or docx or doc')
-        attachFileUpdate.classList.add('is-invalid')
-    }
-});
-
-////////////////////////////////// FILE UPLOADING REQUEST ///////////////////////////////////////
-
-
-const resumeUpdate = document.getElementById('attachFileUpdate');
-const upload2 = () => {
-    // e.preventDefault()
-    const form = new FormData();
-    form.append('file', resumeUpdate.files[0]);
-
-    var settings = {
-        url: 'https://api-hfc.techchefz.com/icicihfc-micro-service/document/reference/upload/v2',
-        method: 'POST',
-        timeout: 0,
-        processData: false,
-        mimeType: 'multipart/form-data',
-        contentType: false,
-        data: form,
-    };
-
-    $.ajax(settings).done(function (response) {
-        const data = JSON.parse(response).data;
-        if (data) {
-            resumeIDUpdateVal = data.id;
-            resumeNameUpdateVal = data.name;
-            resumeNonceUpdateVal = data.nonce;
-            alert('file uploaded successfully!')
-        } else {
-            alert('file not uploaded!');
-            resumeIDUpdateVal = '';
-        }
-
-    });
-};
-
-///////////////////////////////// FORM SUBMITTING REQUEST ///////////////////////////////////
-
-
-
-function formSubmit2() {
-    const obj = {
-        fullName: fullNameUpdate,
-        emailId: emailIDUpdate,
-        mobileNumber: mobileNoUpdate,
-        experienceOverallId: overallExpIDUpdateVal,
-        experienceRelevantId: relavantExpIDUpdateVal,
-        roleId: roleIDUpdateVal,
-        jobLocationId: jobLocationIDUpdateVal,
-        resumeDocRefId: resumeIDUpdateVal,
-        resumeDocRefFileName: resumeNameUpdateVal,
-        resumeDocRefNonce: resumeNonceUpdateVal,
-    };
-    console.log(obj);
-    const settings = {
-        url: 'https://api-hfc.techchefz.com/icicihfc-micro-service/rms/candidate/submit/form',
-        method: 'POST',
-        timeout: 0,
-        headers: {
-            "Authorization": `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
-        },
-        data: JSON.stringify(obj)
-    };
-
-    $.ajax(settings).done(function (response) {
-        console.log(response);
-    });
-    console.log(obj);
-}
-
-
-/////////////////////////// FORM SUBMISSION /////////////////////////////////
-
-// updateBtn.addEventListener('click', () => {
-//     e.preventDefault()
-//     if (!IsFullNameValidUpdate || !fullNameUpdate || fullNameUpdate === ' ') {
-//         $("#fullNameUpdate").focus();
-//         alert('Enter valid Full Name!')
-//     } else if (!IsEmailValidUpdate || !emailIDUpdate || emailIDUpdate === ' ') {
-//         $("#emailUpdate").focus();
-//         alert('Enter valid Email!')
-//     } else if (!IsMobileNoValidUpdate || !mobileNoUpdate || mobileNoUpdate === ' ') {
-//         $("#mobileNoUpdate").focus();
-//         alert('Enter valid Mobile Number!')
-//     } else if (!overallExpIDUpdateVal) {
-//         $("#overallExpUpdate").focus();
-//         alert('Select Overall Experience!')
-//     } else if (!relavantExpIDUpdateVal) {
-//         $("#relaventExpUpdate").focus();
-//         alert('Select Relavent Experience!')
-//     } else if (!departmentIDUpdateVal) {
-//         $("#departmentUpdate").focus();
-//         alert('Select Department!')
-//     } else if (!roleIDCreateVal) {
-//         $("#roleUpdate").focus();
-//         alert('Select Role!')
-//     } else if (!zoneIDUpdateVal) {
-//         $("#zoneUpdate").focus();
-//         alert('Select Zone!')
-//     } else if (!jobLocationIDUpdateVal) {
-//         $("#branchUpdate").focus();
-//         alert('Select Branch!')
-//     } else if (!resumeIDUpdateVal) {
-//         alert('file not uploaded!')
-//     } else {
-//         formSubmit2();
-//         alert('Data submitted successfully!')
-//         getCandidates(0, 10);
-//     }
-// });
-
-const setCandidateData = (data) => {
-    FullNameUpdateNode.value = data.fullName;
-    EmailUpdateNode.value = data.emailId;
-    MobileNoUpdateNode.value = data.mobileNumber;
-
-    let oldOverallId = data.experienceOverall.id;
-    $("#overallExpUpdate > option").each(function () {
-        if(this.value == oldOverallId){
-            overallExpUpdateNode.value = this.value;
-        }
-    });
-
-    let oldRelaventId = data.experienceRelevant.id;
-    $("#relaventExpUpdate > option").each(function () {
-        if (this.value == oldRelaventId) {
-            relaventExpUpdateNode.value = this.value;
-        }
-    });
-
-    let oldDepId = data.role.department.id;
-    $("#departmentUpdate > option").each(function () {
-        if (this.value == oldDepId) {
-            departmentUpdateNode.value = this.value;
-            setRoleElUpdate(oldDepId)
-        }
-    });
-
-
-    function setRoleElUpdate(selectedDep) {
-        let rolesData;
-        for (let i = 0; i < departmentAndRoleData.length; i++) {
-            if (selectedDep === departmentAndRoleData[i].id) {
-                rolesData = departmentAndRoleData[i].roles;
-            }
-        }
-        for (let i = 0; i < rolesData.length; i++) {
-            const OptEl = document.createElement('option');
-            OptEl.textContent = rolesData[i].name;
-            OptEl.setAttribute('value', rolesData[i].id);
-            roleUpdateNode.append(OptEl);
-        }
-        if (rolesData.length == 1) {
-            roleUpdateNode.options[1].selected = 'selected';
-            roleIDUpdateVal = roleUpdateNode.value;
-        }
-        roleUpdateNode.addEventListener('change', (e) => {
-            let selectedValue = e.target.value;
-            if (selectedValue === '0') {
-                roleIDUpdateVal = '';
-            } else {
-                roleIDUpdateVal = selectedValue;
-            }
-        });
-    }
-
-
-
-    let oldZone = data.jobLocation.zone;
-    let newZone;
-    console.log(oldZone);
-    $("#zoneUpdate > option").each(function () {
-        if (this.value == oldZone) {
-            zoneUpdateNode.value = this.value;
-        }
-    });
-
-}
 
 const getCandidateData = async (candidateID) => {
     console.log(candidateID)
@@ -1544,6 +1210,87 @@ function getUpdateForm(ref) {
     getCandidateData(candidateID)
 }
 
+
+/////////////////  candidate status change ////////////////////
+const statusChangeToggler = document.getElementById('candidateStatus');
+const statusChangeTextBox = document.getElementById('statusRemarks');
+const statusBtn = document.getElementById('changeStatusBtn');
+
+let statusChangeVal = '',
+    statusChangeTextVal = '',
+    candidateID = '';
+
+function getStatus(ref){
+    candidateID = ref.parentNode.parentNode.children[9].textContent;
+    console.log(candidateID);
+    $('#statusModalLabel').text(candidateID)
+
+    statusChangeToggler.addEventListener('change', (e) => {
+        let selectedValue = e.target.value;
+        if (selectedValue === '0') {
+            statusChangeVal = '';
+        } else if (selectedValue === '1') {
+            statusChangeVal = 'CREATED'
+        } else if (selectedValue === '2') {
+            statusChangeVal = 'SHORT_LISTED'
+        } else if (selectedValue === '3') {
+            statusChangeVal = 'HOLD'
+        } else if (selectedValue === '4') {
+            statusChangeVal = 'REJECTED'
+        } else {
+            statusChangeVal = 'ALL'
+        }
+    })
+
+    statusChangeTextBox.addEventListener('change', (e) => {
+        const str = statusChangeTextBox.value;
+        statusChangeTextVal = str;
+    })
+
+    console.log(statusChangeVal, statusChangeTextVal)
+    statusBtn.addEventListener('click', () => {
+        if (!candidateID) {
+            $('#candidateStatus').focus();
+        } else if (!statusChangeVal) {
+            $('#candidateStatus').focus();
+            alert('status not selected');
+        } else if (!statusChangeTextVal) {
+            $('#statusRemarks').focus();
+            alert('remarks not added!');
+        } else {
+            submitStatus();
+            getCandidates(0, 10);
+        }
+    })
+}
+
+const CloseStatusModal = () => {
+    $('#statusModel').modal('hide');
+}
+
+const submitStatus = () => {
+    const obj = {
+        candidateId: candidateID,
+        candidateStatus: statusChangeVal,
+        remarks: statusChangeTextVal,
+    };
+    console.log(obj);
+    const settings = {
+        url: 'https://api-hfc.techchefz.com/icicihfc-micro-service/rms/dashboard/candidate/change/status/by/hr',
+        method: 'POST',
+        timeout: 0,
+        headers: {
+            "Authorization": `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(obj)
+    };
+
+    $.ajax(settings).done(function (response) {
+        alert('status changed successfully!');
+    });
+    CloseStatusModal();
+}
 
 
 
